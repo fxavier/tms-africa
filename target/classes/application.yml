@@ -45,3 +45,9 @@ logging:
 tms:
   security:
     permissive-mode: true
+  superuser:
+    username: ${TMS_SUPERUSER_USERNAME:superuser}
+    password: ${TMS_SUPERUSER_PASSWORD:ChangeMe123!}
+    email: ${TMS_SUPERUSER_EMAIL:superuser@tms.local}
+    first-name: ${TMS_SUPERUSER_FIRST_NAME:System}
+    last-name: ${TMS_SUPERUSER_LAST_NAME:Superuser}

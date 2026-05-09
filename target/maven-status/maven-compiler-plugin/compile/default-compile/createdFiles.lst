@@ -7,6 +7,7 @@ pt/xavier/tms/shared/exception/BusinessException.class
 pt/xavier/tms/shared/enums/DocumentStatus.class
 pt/xavier/tms/alert/package-info.class
 pt/xavier/tms/shared/dto/ApiResponse.class
+pt/xavier/tms/shared/dto/package-info.class
 pt/xavier/tms/TmsApplication.class
 pt/xavier/tms/user/port/KeycloakUserGateway.class
 pt/xavier/tms/shared/dto/ErrorResponse.class
@@ -26,6 +27,7 @@ pt/xavier/tms/user/dto/UserResponseDto.class
 pt/xavier/tms/shared/enums/ChecklistItemStatus.class
 pt/xavier/tms/user/service/UserService.class
 pt/xavier/tms/shared/enums/ActivityStatus.class
+pt/xavier/tms/user/config/SuperuserInitializer.class
 pt/xavier/tms/user/infrastructure/NoopKeycloakUserGateway.class
 pt/xavier/tms/shared/enums/VehicleDocumentType.class
 pt/xavier/tms/audit/package-info.class
@@ -40,6 +42,8 @@ pt/xavier/tms/shared/enums/AccessoryStatus.class
 pt/xavier/tms/shared/enums/AuditOperation.class
 pt/xavier/tms/integration/package-info.class
 pt/xavier/tms/shared/package-info.class
+pt/xavier/tms/shared/exception/package-info.class
+pt/xavier/tms/user/config/SuperuserProperties.class
 pt/xavier/tms/shared/enums/MaintenanceType.class
 pt/xavier/tms/shared/exception/AllocationException.class
 pt/xavier/tms/shared/exception/GlobalExceptionHandler.class

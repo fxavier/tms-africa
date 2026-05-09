@@ -115,7 +115,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 ### Fase 2 — Módulo Vehicle (Semanas 3–5)
 
-- [ ] 7. Criar migrations Flyway para o módulo Vehicle
+- [x] 7. Criar migrations Flyway para o módulo Vehicle
   - Criar `V1__create_vehicles.sql` com tabela `vehicles` (UUID PK, `plate` UNIQUE, `brand`, `model`, `vehicle_type`, `capacity`, `activity_location`, `activity_start_date`, `status` com CHECK, `current_driver_id` FK, `notes`, campos de auditoria, `deleted_at`, `deleted_by`)
   - Criar `V4__create_vehicle_documents.sql` com tabela `vehicle_documents` (UUID PK, `vehicle_id` FK, `document_type` com CHECK, `document_number`, `issue_date`, `expiry_date`, `issuing_entity`, `status` com CHECK, `notes`, `file_id` FK, campos de auditoria, soft delete)
   - Criar `V4b__create_vehicle_accessories.sql` com tabela `vehicle_accessories` (UUID PK, `vehicle_id` FK, `accessory_type` com CHECK, `status` com CHECK, `last_checked_at`, `last_checked_by`, UNIQUE em `vehicle_id + accessory_type`)

@@ -7,24 +7,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.test.web.servlet.MockMvc;
-import pt.xavier.tms.security.SecurityConfig;
 
-@WebMvcTest(controllers = GlobalExceptionHandlerTest.TestController.class)
-@Import({GlobalExceptionHandler.class, SecurityConfig.class})
 class GlobalExceptionHandlerTest {
 
-    @Autowired
     private MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
+
+        mockMvc = MockMvcBuilders.standaloneSetup(new TestController())
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .setValidator(validator)
+                .build();
+    }
 
     @Test
     void shouldReturn404ForResourceNotFound() throws Exception {
@@ -65,7 +72,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @RestController
-    static class TestController {
+    public static class TestController {
 
         @GetMapping("/test/not-found")
         public void notFound() {
@@ -92,6 +99,6 @@ class GlobalExceptionHandlerTest {
         }
     }
 
-    record SampleRequest(@NotBlank String name) {
+    public record SampleRequest(@NotBlank String name) {
     }
 }
