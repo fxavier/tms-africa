@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tms_dev
+    username: tms_dev
+    password: tms_dev
+
+tms:
+  keycloak:
+    server-url: http://localhost:8081
+    realm: tms
