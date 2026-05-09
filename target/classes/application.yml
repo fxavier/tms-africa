@@ -25,10 +25,22 @@ management:
   endpoint:
     health:
       show-details: when-authorized
+  health:
+    db:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: Transport Management System backend
+    version: 0.0.1-SNAPSHOT
 
 logging:
-  pattern:
-    console: '{"timestamp":"%d{yyyy-MM-dd''T''HH:mm:ss.SSSXXX}","level":"%p","logger":"%logger{36}","traceId":"%X{traceId:-}","message":"%replace(%m){''"'',''\"''}"}%n'
+  level:
+    root: INFO
 
 tms:
   security:

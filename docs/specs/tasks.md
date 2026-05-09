@@ -46,7 +46,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - **Nota:** este modo permissivo é APENAS para desenvolvimento — será substituído na Fase 6b
   - _Requisitos: 16.1_
 
-- [x] 4b. Implementar módulo `user` — Gestão de utilizadores via Keycloak Admin API
+- [] 4b. Implementar módulo `user` — Gestão de utilizadores via Keycloak Admin API
   - Adicionar dependência `keycloak-admin-client` ao `pom.xml` (versão 24.x)
   - Criar `KeycloakAdminConfig` com `@ConfigurationProperties(prefix="tms.keycloak.admin")`, bean `Keycloak` (client credentials com `tms-admin-cli`) e bean `RealmResource`
   - Criar `SuperuserInitializer` com `@PostConstruct` que:
@@ -79,22 +79,22 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Adicionar variáveis de ambiente ao `application.yml`: `tms.superuser.username`, `tms.superuser.password`, `tms.superuser.email`, `tms.keycloak.admin.*`
   - _Requisitos: 0.1, 0.2, 0.3, 0.4, 0.5_
 
-- [ ] 4c. Escrever testes do módulo `user`
-  - [ ]\* 4c.1 Escrever testes unitários do `UserService`
+- [x] 4c. Escrever testes do módulo `user`
+  - [x]\* 4c.1 Escrever testes unitários do `UserService`
     - Testar `createUser()` com username duplicado lança `BusinessException`
     - Testar `createUser()` com email duplicado lança `BusinessException`
     - Testar `updateUser()` com tentativa de atribuir role `SUPERUSER` por `ADMIN` lança `BusinessException`
     - Testar `setUserEnabled(false)` para o próprio utilizador lança `BusinessException`
     - Testar `forcePasswordReset()` chama `executeActionsEmail` com ação `UPDATE_PASSWORD`
     - _Requisitos: 0.1, 0.2_
-  - [ ]\* 4c.2 Escrever testes de integração dos endpoints User
+  - [x]\* 4c.2 Escrever testes de integração dos endpoints User
     - Testar `POST /api/v1/users` por ADMIN cria utilizador e retorna 201
     - Testar `POST /api/v1/users` por GESTOR_FROTA retorna 403
     - Testar `PATCH /api/v1/users/{id}/disable` invalida sessões do utilizador
     - Testar `GET /api/v1/users/me` retorna perfil do utilizador autenticado
     - _Requisitos: 0.1, 0.2, 0.4_
 
-- [ ] 5. Configurar Spring Boot Actuator e logging
+- [x] 5. Configurar Spring Boot Actuator e logging
   - Expor endpoints `health`, `info`, `metrics`, `prometheus` via `management.endpoints.web.exposure.include`
   - Configurar `management.endpoint.health.show-details: when-authorized`
   - Configurar logging estruturado JSON com padrão `{"timestamp":...,"level":...,"logger":...,"message":...}`

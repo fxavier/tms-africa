@@ -34,5 +34,12 @@
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/shared/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/shared/util/CodeGenerator.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/shared/util/DateUtils.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/api/UserController.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/dto/UserCreateDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/dto/UserResponseDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/dto/UserUpdateDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/infrastructure/NoopKeycloakUserGateway.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/package-info.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/port/KeycloakUserGateway.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/user/service/UserService.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/package-info.java
