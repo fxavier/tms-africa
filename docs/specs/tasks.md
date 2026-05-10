@@ -125,7 +125,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar `V10__create_indexes.sql` com todos os índices: `idx_vehicles_plate`, `idx_vehicles_status`, `idx_vehicles_plate_trgm` (GIN com `gin_trgm_ops`), `idx_vehicle_docs_expiry`, `idx_vehicle_docs_status`, `idx_vehicle_accessories_vehicle`, `idx_maintenance_vehicle`, `idx_maintenance_next_date`, `idx_checklist_inspections_vehicle`
   - _Requisitos: 1.1, 1.5, 2.1, 3.1, 4.1, 5.1, 14.5_
 
-- [ ] 8. Implementar entidades JPA do módulo Vehicle
+- [x] 8. Implementar entidades JPA do módulo Vehicle
   - Criar `Vehicle.java` com `@Entity`, `@Table(name="vehicles")`, `@SQLRestriction("deleted_at IS NULL")`, `@EntityListeners(AuditingEntityListener.class)`, todos os campos mapeados, relações `@OneToMany` para `VehicleDocument`, `VehicleAccessory`, `MaintenanceRecord`, e método `softDelete(String deletedBy)`
   - Criar `VehicleDocument.java` com `@Entity`, `@SQLRestriction("deleted_at IS NULL")`, relação `@ManyToOne` para `Vehicle` e `FileRecord`, método `softDelete()`
   - Criar `VehicleAccessory.java` com `@Entity`, todos os campos incluindo `lastCheckedAt` e `lastCheckedBy`
@@ -136,7 +136,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar `FileRecord.java` com `@Entity` para a tabela `files`
   - _Requisitos: 1.1, 1.2, 2.1, 3.3, 4.2, 5.4_
 
-- [ ] 9. Implementar repositórios do módulo Vehicle
+- [x] 9. Implementar repositórios do módulo Vehicle
   - Criar `VehicleRepository` com `JpaRepository<Vehicle, UUID>` e queries: `findByPlate(String plate)`, `findByPlateContainingIgnoreCase(String q, Pageable p)` (pesquisa parcial com `pg_trgm`), `existsByPlate(String plate)`, `findAllByFilters(status, location, Pageable)` com `@Query` JPQL
   - Criar `VehicleDocumentRepository` com queries: `findByVehicleId(UUID vehicleId)`, `findByVehicleIdAndStatus(UUID vehicleId, DocumentStatus status)`, `findByExpiryDateBetweenAndStatusNot(LocalDate from, LocalDate to, DocumentStatus status)`, `findByExpiryDateBeforeAndStatusNot(LocalDate date, DocumentStatus status)`
   - Criar `VehicleAccessoryRepository` com `findByVehicleId(UUID vehicleId)`
@@ -145,14 +145,14 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar `ChecklistInspectionRepository` com `findLatestByVehicleId(UUID vehicleId)` retornando `Optional<ChecklistInspection>`
   - _Requisitos: 1.5, 3.5, 4.7, 5.7, 5.8, 14.5_
 
-- [ ] 10. Implementar serviços do módulo Vehicle
+- [x] 10. Implementar serviços do módulo Vehicle
   - Criar `VehicleService` com métodos: `createVehicle(VehicleCreateDto)` (valida matrícula única, lança `BusinessException` se duplicada), `updateVehicle(UUID, VehicleUpdateDto)`, `updateStatus(UUID, VehicleStatus)` (impede alocação se ABATIDA), `deleteVehicle(UUID)` (soft delete), `getVehicle(UUID)`, `listVehicles(filtros, Pageable)`, `searchByPlate(String q, Pageable)`, `getConsolidated(UUID)` — anotar métodos de escrita com `@Auditable`
   - Criar `VehicleDocumentService` com métodos: `addDocument(UUID vehicleId, VehicleDocumentDto)`, `updateDocument(UUID vehicleId, UUID docId, VehicleDocumentDto)`, `deleteDocument(UUID vehicleId, UUID docId)` (soft delete), `listDocuments(UUID vehicleId)` — validar tamanho máximo de ficheiro (10 MB)
   - Criar `MaintenanceService` com métodos: `registerMaintenance(UUID vehicleId, MaintenanceRecordDto)` (cria alerta automático se `nextMaintenanceDate` preenchido), `listMaintenance(UUID vehicleId, filtros, Pageable)`, `getMaintenance(UUID vehicleId, UUID maintenanceId)`
   - Criar `ChecklistService` com métodos: `submitChecklist(UUID vehicleId, ChecklistInspectionDto)` (valida itens críticos), `listChecklists(UUID vehicleId, filtros, Pageable)`, `getTemplate(UUID templateId)`, `createTemplate(ChecklistTemplateDto)`, `updateTemplate(UUID, ChecklistTemplateDto)`
   - _Requisitos: 1.3, 1.4, 1.7, 2.3, 2.4, 3.5, 3.8, 4.2, 4.3, 5.3, 5.4, 5.5_
 
-- [ ] 11. Implementar módulo `integration` — FileStorage e porta RH
+- [x] 11. Implementar módulo `integration` — FileStorage e porta RH
   - Criar interface `FileStoragePort` com métodos `upload(MultipartFile file): FileUploadResultDto` e `download(String storageKey): Resource`
   - Criar `S3FileStorageAdapter` com `@ConditionalOnProperty(name="tms.storage.type", havingValue="s3")` usando AWS SDK v2, validando content-type (PDF, JPG, PNG) e tamanho máximo (10 MB)
   - Criar `LocalFileStorageAdapter` com `@ConditionalOnProperty(name="tms.storage.type", havingValue="local")` para ambiente de desenvolvimento
@@ -161,7 +161,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar DTOs: `DriverAvailabilityDto`, `RhAbsenceDto`, `FileUploadResultDto`
   - _Requisitos: 3.9, 15.6, 13.1, 13.2_
 
-- [ ] 12. Implementar controllers REST do módulo Vehicle
+- [x] 12. Implementar controllers REST do módulo Vehicle
   - Criar `VehicleController` com endpoints: `POST /api/v1/vehicles`, `GET /api/v1/vehicles`, `GET /api/v1/vehicles/search`, `GET /api/v1/vehicles/{id}`, `GET /api/v1/vehicles/{id}/consolidated`, `PUT /api/v1/vehicles/{id}`, `PATCH /api/v1/vehicles/{id}/status`, `DELETE /api/v1/vehicles/{id}`
   - Criar `VehicleDocumentController` com endpoints: `GET /api/v1/vehicles/{id}/documents`, `POST /api/v1/vehicles/{id}/documents`, `PUT /api/v1/vehicles/{id}/documents/{docId}`, `DELETE /api/v1/vehicles/{id}/documents/{docId}`
   - Criar `MaintenanceController` com endpoints: `GET /api/v1/vehicles/{id}/maintenance`, `POST /api/v1/vehicles/{id}/maintenance`
