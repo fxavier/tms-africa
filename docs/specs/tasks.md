@@ -187,17 +187,17 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar `AuditController` com `GET /api/v1/audit` (filtros + paginação, apenas ADMIN e AUDITOR) e `GET /api/v1/audit/{id}`
   - _Requisitos: 12.1, 12.2, 12.3, 12.4, 12.6_
 
-- [ ] 15. Escrever testes unitários do módulo Vehicle
-  - [ ]\* 15.1 Escrever testes unitários do `VehicleService`
+- [x] 15. Escrever testes unitários do módulo Vehicle
+  - [x]\* 15.1 Escrever testes unitários do `VehicleService`
     - Testar criação com matrícula duplicada lança `BusinessException`
     - Testar soft delete define `deletedAt` e `deletedBy`
     - Testar alteração de estado para ABATIDA
     - _Requisitos: 1.3, 1.7_
-  - [ ]\* 15.2 Escrever testes unitários do `ChecklistService`
+  - [x]\* 15.2 Escrever testes unitários do `ChecklistService`
     - Testar submissão de checklist com item crítico em AVARIA
     - Testar submissão de checklist sem falhas críticas
     - _Requisitos: 5.3, 5.5_
-  - [ ]\* 15.3 Escrever testes de integração dos endpoints Vehicle
+  - [x]\* 15.3 Escrever testes de integração dos endpoints Vehicle
     - Testar `POST /api/v1/vehicles` retorna 201 com dados corretos
     - Testar `POST /api/v1/vehicles` com matrícula duplicada retorna 422
     - Testar `GET /api/v1/vehicles/search?q=AA` retorna resultados paginados
