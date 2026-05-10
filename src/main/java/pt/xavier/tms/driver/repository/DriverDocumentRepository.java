@@ -14,6 +14,8 @@ public interface DriverDocumentRepository extends JpaRepository<DriverDocument, 
 
     List<DriverDocument> findByDriver_IdAndDocumentType(UUID driverId, DriverDocumentType type);
 
+    List<DriverDocument> findByDriverIdAndDocumentType(UUID driverId, DriverDocumentType type);
+
     List<DriverDocument> findByExpiryDateBetweenAndStatusNot(LocalDate from, LocalDate to, DocumentStatus status);
 
     List<DriverDocument> findByExpiryDateBeforeAndStatusNot(LocalDate date, DocumentStatus status);

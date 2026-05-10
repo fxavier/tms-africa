@@ -13,6 +13,8 @@ public interface VehicleDocumentRepository extends JpaRepository<VehicleDocument
 
     List<VehicleDocument> findByVehicle_IdAndStatus(UUID vehicleId, DocumentStatus status);
 
+    List<VehicleDocument> findByVehicleIdAndStatus(UUID vehicleId, DocumentStatus status);
+
     List<VehicleDocument> findByExpiryDateBetweenAndStatusNot(LocalDate from, LocalDate to, DocumentStatus status);
 
     List<VehicleDocument> findByExpiryDateBeforeAndStatusNot(LocalDate date, DocumentStatus status);

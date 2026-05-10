@@ -514,24 +514,24 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Adicionar índices: `idx_activities_status`, `idx_activities_vehicle`, `idx_activities_driver`, `idx_activities_planned_start`, `idx_activities_code`, `idx_activity_events_activity`
   - _Requisitos: 8.1, 8.6, 14.5_
 
-- [ ] 26. Implementar entidades JPA do módulo Activity
+- [x] 26. Implementar entidades JPA do módulo Activity
   - Criar `Activity.java` com `@Entity`, `@Table(name="activities")`, `@SQLRestriction("deleted_at IS NULL")`, `@EntityListeners(AuditingEntityListener.class)`, todos os campos mapeados, relações `@ManyToOne` para `Vehicle` e `Driver` (LAZY), relação `@OneToMany` para `ActivityEvent` com `@OrderBy("performedAt ASC")`, e método `softDelete()`
   - Criar `ActivityEvent.java` com `@Entity`, campos `eventType`, `previousStatus`, `newStatus`, `performedBy`, `performedAt`, `notes`
   - Adicionar ao enum `ActivityStatus` o mapa `ALLOWED_TRANSITIONS` e métodos `canTransitionTo(ActivityStatus target)` e `validateTransition(ActivityStatus target)` que lança `BusinessException("INVALID_STATUS_TRANSITION", ...)` se inválida
   - _Requisitos: 8.1, 8.3, 8.4, 8.8_
 
-- [ ] 27. Implementar `ActivityCodeGenerator`
+- [x] 27. Implementar `ActivityCodeGenerator`
   - Criar `ActivityCodeGenerator` em `activity/service` com método `generateActivityCode()` que obtém o ano corrente, conta atividades com código iniciado em `ACT-{ANO}-` via `activityRepository.countByCodeStartingWith(prefix)`, e retorna `ACT-{ANO}-{SEQUENCIAL:04d}`
   - Garantir que a geração é feita dentro de transação para evitar duplicados em concorrência
   - _Requisitos: 8.6_
 
-- [ ] 28. Implementar repositórios do módulo Activity com pessimistic locking
+- [x] 28. Implementar repositórios do módulo Activity com pessimistic locking
   - Criar `ActivityRepository` com queries: `findByCode(String code)`, `countByCodeStartingWith(String prefix)`, `findAllByFilters(status, vehicleId, driverId, from, to, Pageable)` com `@Query` JPQL
   - Adicionar queries com `@Lock(LockModeType.PESSIMISTIC_WRITE)`: `findConflictingActivitiesForVehicle(UUID vehicleId, OffsetDateTime start, OffsetDateTime end, UUID excludeActivityId)` e `findConflictingActivitiesForDriver(UUID driverId, OffsetDateTime start, OffsetDateTime end, UUID excludeActivityId)` — ambas filtram por status `PLANEADA` ou `EM_CURSO`, `deletedAt IS NULL`, e sobreposição de período (`plannedStart < end AND plannedEnd > start`)
   - Criar `ActivityEventRepository` com `findByActivityIdOrderByPerformedAtAsc(UUID activityId)`
   - _Requisitos: 8.8, 9.6, 9.7_
 
-- [ ] 29. Implementar `AllocationValidationService` com os 8 passos de validação
+- [x] 29. Implementar `AllocationValidationService` com os 8 passos de validação
   - Criar `AllocationValidationService` em `activity/service` com método `validate(UUID activityId, UUID vehicleId, UUID driverId, OffsetDateTime plannedStart, OffsetDateTime plannedEnd, String rhOverrideJustification): AllocationResultDto`
   - Passo 1: verificar estado da viatura (EM_MANUTENCAO → `VEHICLE_IN_MAINTENANCE`, INDISPONIVEL → `VEHICLE_UNAVAILABLE`, ABATIDA → `VEHICLE_DECOMMISSIONED`)
   - Passo 2: verificar documentos da viatura com status `EXPIRADO` via `vehicleDocumentRepository.findByVehicleIdAndStatus(vehicleId, EXPIRADO)` — acumular um bloqueio por documento
@@ -544,7 +544,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Retornar `AllocationResultDto` com `allocated = blockers.isEmpty()` e lista completa de bloqueios
   - _Requisitos: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 7.1, 7.2, 7.3, 7.4, 7.6_
 
-- [ ] 30. Implementar `ActivityService` com ciclo de vida e alocação
+- [x] 30. Implementar `ActivityService` com ciclo de vida e alocação
   - Criar `ActivityService` com métodos:
     - `createActivity(ActivityCreateDto)`: gera código via `ActivityCodeGenerator`, persiste com status `PLANEADA`, publica `AuditEvent`
     - `updateActivity(UUID, ActivityUpdateDto)`: atualiza campos opcionais, publica `AuditEvent`
@@ -557,14 +557,14 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Anotar `createActivity`, `updateActivity`, `deleteActivity`, `allocate`, `transitionStatus` com `@Auditable`
   - _Requisitos: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8_
 
-- [ ] 31. Implementar `ActivityController`
+- [x] 31. Implementar `ActivityController`
   - Criar `ActivityController` com endpoints: `POST /api/v1/activities`, `GET /api/v1/activities`, `GET /api/v1/activities/{id}`, `PUT /api/v1/activities/{id}`, `DELETE /api/v1/activities/{id}`, `POST /api/v1/activities/{id}/allocate`, `PATCH /api/v1/activities/{id}/status`, `GET /api/v1/activities/{id}/events`
   - **Nota:** a restrição de MOTORISTA ver apenas as suas atividades e o `ActivitySecurityService` serão implementados na Fase 6c (refatoração de segurança)
   - **Nota:** `@PreAuthorize` será adicionado na Fase 6c (refatoração de segurança)
   - _Requisitos: 8.1, 8.3, 8.4, 9.8, 17.6_
 
-- [ ] 32. Escrever testes unitários do módulo Activity
-  - [ ]\* 32.1 Escrever testes unitários do `AllocationValidationService`
+- [x] 32. Escrever testes unitários do módulo Activity
+  - [x]\* 32.1 Escrever testes unitários do `AllocationValidationService`
     - Testar Passo 1: viatura em manutenção gera bloqueio `VEHICLE_IN_MAINTENANCE`
     - Testar Passo 1: viatura ABATIDA gera bloqueio `VEHICLE_DECOMMISSIONED`
     - Testar Passo 2: documento expirado gera bloqueio `VEHICLE_DOCUMENT_EXPIRED`
@@ -578,19 +578,19 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
     - Testar Passo 8: conflito de motorista gera bloqueio `DRIVER_ALLOCATION_CONFLICT`
     - Testar alocação válida retorna `AllocationResultDto` com `allocated=true` e lista vazia de bloqueios
     - _Requisitos: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8_
-  - [ ]\* 32.2 Escrever testes unitários do `ActivityService` — transições de estado
+  - [x]\* 32.2 Escrever testes unitários do `ActivityService` — transições de estado
     - Testar transição válida `PLANEADA → EM_CURSO` atualiza `actualStart`
     - Testar transição válida `EM_CURSO → CONCLUIDA` atualiza `actualEnd`
     - Testar transição inválida `CONCLUIDA → EM_CURSO` lança `BusinessException`
     - Testar transição inválida `CANCELADA → PLANEADA` lança `BusinessException`
     - _Requisitos: 8.3, 8.4_
-  - [ ]\* 32.3 Escrever testes de integração do módulo Activity
+  - [x]\* 32.3 Escrever testes de integração do módulo Activity
     - Testar `POST /api/v1/activities` gera código `ACT-{ANO}-{SEQ}` único
     - Testar `POST /api/v1/activities/{id}/allocate` com viatura em manutenção retorna 422 com bloqueio
     - Testar `PATCH /api/v1/activities/{id}/status` com transição inválida retorna 422
     - _Requisitos: 8.6, 9.2, 8.4_
 
-- [ ] 33. Checkpoint — Módulo Activity completo
+- [x] 33. Checkpoint — Módulo Activity completo
   - Verificar que criação de atividade gera código `ACT-{ANO}-{SEQ}` único
   - Verificar que alocação com viatura em manutenção é bloqueada com mensagem clara
   - Verificar que conflito de alocação simultânea é detetado e bloqueado

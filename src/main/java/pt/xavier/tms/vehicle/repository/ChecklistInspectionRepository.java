@@ -12,6 +12,8 @@ public interface ChecklistInspectionRepository extends JpaRepository<ChecklistIn
 
     Optional<ChecklistInspection> findTopByVehicle_IdOrderByPerformedAtDesc(UUID vehicleId);
 
+    Optional<ChecklistInspection> findTopByVehicleIdOrderByPerformedAtDesc(UUID vehicleId);
+
     Page<ChecklistInspection> findByVehicle_Id(UUID vehicleId, Pageable pageable);
 
     List<ChecklistInspection> findByVehicle_Id(UUID vehicleId);
