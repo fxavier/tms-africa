@@ -38,4 +38,8 @@ public class FileRecord {
 
     @Column(name = "uploaded_at", nullable = false)
     private Instant uploadedAt;
+
+    public UUID getId() {
+        return id;
+    }
 }

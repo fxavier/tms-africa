@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pt.xavier.tms.shared.dto.ApiResponse;
@@ -26,10 +24,13 @@ import pt.xavier.tms.vehicle.service.ChecklistService;
 
 @Validated
 @RestController
-@RequiredArgsConstructor
 public class ChecklistController {
 
     private final ChecklistService checklistService;
+
+    public ChecklistController(ChecklistService checklistService) {
+        this.checklistService = checklistService;
+    }
 
     @GetMapping("/api/v1/vehicles/{id}/checklists")
     public ResponseEntity<ApiResponse<PagedResponse<ChecklistInspectionDto>>> listVehicleChecklists(

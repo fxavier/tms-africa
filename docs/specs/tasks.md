@@ -171,7 +171,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - **Nota:** `@PreAuthorize` será adicionado na Fase 6c (refatoração de segurança)
   - _Requisitos: 1.1, 1.5, 3.9, 4.1, 5.1, 10.1, 10.6, 14.4, 17.3_
 
-- [ ] 13. Implementar mappers MapStruct do módulo Vehicle
+- [x] 13. Implementar mappers MapStruct do módulo Vehicle
   - Criar `VehicleMapper` com métodos `toResponseDto(Vehicle)`, `toEntity(VehicleCreateDto)`, `updateEntity(VehicleUpdateDto, @MappingTarget Vehicle)`
   - Criar `VehicleDocumentMapper`, `MaintenanceMapper`, `ChecklistMapper` com mapeamentos equivalentes
   - Criar `VehicleConsolidatedDto` e lógica de montagem no `VehicleService.getConsolidated()` agregando dados de documentos, acessórios, manutenções, checklists, atividades ativas e alertas ativos

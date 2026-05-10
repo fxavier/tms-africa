@@ -2,7 +2,6 @@ package pt.xavier.tms.vehicle.service;
 
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.xavier.tms.audit.annotation.Auditable;
@@ -12,17 +11,29 @@ import pt.xavier.tms.vehicle.domain.FileRecord;
 import pt.xavier.tms.vehicle.domain.Vehicle;
 import pt.xavier.tms.vehicle.domain.VehicleDocument;
 import pt.xavier.tms.vehicle.dto.VehicleDocumentDto;
+import pt.xavier.tms.vehicle.mapper.VehicleDocumentMapper;
 import pt.xavier.tms.vehicle.repository.FileRecordRepository;
 import pt.xavier.tms.vehicle.repository.VehicleDocumentRepository;
 import pt.xavier.tms.vehicle.repository.VehicleRepository;
 
 @Service
-@RequiredArgsConstructor
 public class VehicleDocumentService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleDocumentRepository vehicleDocumentRepository;
     private final FileRecordRepository fileRecordRepository;
+    private final VehicleDocumentMapper vehicleDocumentMapper;
+
+    public VehicleDocumentService(
+            VehicleRepository vehicleRepository,
+            VehicleDocumentRepository vehicleDocumentRepository,
+            FileRecordRepository fileRecordRepository,
+            VehicleDocumentMapper vehicleDocumentMapper) {
+        this.vehicleRepository = vehicleRepository;
+        this.vehicleDocumentRepository = vehicleDocumentRepository;
+        this.fileRecordRepository = fileRecordRepository;
+        this.vehicleDocumentMapper = vehicleDocumentMapper;
+    }
 
     @Transactional
     @Auditable(entityType = "VEHICLE_DOCUMENT", operation = AuditOperation.CRIACAO)
@@ -41,7 +52,7 @@ public class VehicleDocumentService {
         if (dto.fileId() != null) {
             document.setFile(getFile(dto.fileId()));
         }
-        return toDto(vehicleDocumentRepository.save(document));
+        return vehicleDocumentMapper.toDto(vehicleDocumentRepository.save(document));
     }
 
     @Transactional
@@ -58,7 +69,7 @@ public class VehicleDocumentService {
         document.setStatus(dto.status());
         document.setNotes(dto.notes());
         document.setFile(dto.fileId() == null ? null : getFile(dto.fileId()));
-        return toDto(vehicleDocumentRepository.save(document));
+        return vehicleDocumentMapper.toDto(vehicleDocumentRepository.save(document));
     }
 
     @Transactional
@@ -74,7 +85,7 @@ public class VehicleDocumentService {
     @Transactional(readOnly = true)
     public List<VehicleDocumentDto> listDocuments(UUID vehicleId) {
         getVehicle(vehicleId);
-        return vehicleDocumentRepository.findByVehicle_Id(vehicleId).stream().map(this::toDto).toList();
+        return vehicleDocumentRepository.findByVehicle_Id(vehicleId).stream().map(vehicleDocumentMapper::toDto).toList();
     }
 
     private Vehicle getVehicle(UUID vehicleId) {
@@ -85,19 +96,5 @@ public class VehicleDocumentService {
     private FileRecord getFile(UUID fileId) {
         return fileRecordRepository.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFoundException("FILE_NOT_FOUND", "File not found"));
-    }
-
-    private VehicleDocumentDto toDto(VehicleDocument document) {
-        return new VehicleDocumentDto(
-                document.getId(),
-                document.getDocumentType(),
-                document.getDocumentNumber(),
-                document.getIssueDate(),
-                document.getExpiryDate(),
-                document.getIssuingEntity(),
-                document.getStatus(),
-                document.getNotes(),
-                document.getFile() == null ? null : document.getFile().getId()
-        );
     }
 }

@@ -59,4 +59,28 @@ public class ChecklistTemplate {
     @LastModifiedBy
     @Column(name = "updated_by", nullable = false, length = 100)
     private String updatedBy;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setItems(List<ChecklistTemplateItem> items) {
+        this.items = items;
+    }
 }

@@ -2,7 +2,6 @@ package pt.xavier.tms.vehicle.service;
 
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,22 +15,34 @@ import pt.xavier.tms.vehicle.domain.ChecklistTemplate;
 import pt.xavier.tms.vehicle.domain.ChecklistTemplateItem;
 import pt.xavier.tms.vehicle.domain.Vehicle;
 import pt.xavier.tms.vehicle.dto.ChecklistInspectionDto;
-import pt.xavier.tms.vehicle.dto.ChecklistInspectionItemDto;
 import pt.xavier.tms.vehicle.dto.ChecklistTemplateDto;
-import pt.xavier.tms.vehicle.dto.ChecklistTemplateItemDto;
+import pt.xavier.tms.vehicle.mapper.ChecklistMapper;
 import pt.xavier.tms.vehicle.repository.ChecklistInspectionRepository;
 import pt.xavier.tms.vehicle.repository.ChecklistTemplateItemRepository;
 import pt.xavier.tms.vehicle.repository.ChecklistTemplateRepository;
 import pt.xavier.tms.vehicle.repository.VehicleRepository;
 
 @Service
-@RequiredArgsConstructor
 public class ChecklistService {
 
     private final VehicleRepository vehicleRepository;
     private final ChecklistTemplateRepository checklistTemplateRepository;
     private final ChecklistTemplateItemRepository checklistTemplateItemRepository;
     private final ChecklistInspectionRepository checklistInspectionRepository;
+    private final ChecklistMapper checklistMapper;
+
+    public ChecklistService(
+            VehicleRepository vehicleRepository,
+            ChecklistTemplateRepository checklistTemplateRepository,
+            ChecklistTemplateItemRepository checklistTemplateItemRepository,
+            ChecklistInspectionRepository checklistInspectionRepository,
+            ChecklistMapper checklistMapper) {
+        this.vehicleRepository = vehicleRepository;
+        this.checklistTemplateRepository = checklistTemplateRepository;
+        this.checklistTemplateItemRepository = checklistTemplateItemRepository;
+        this.checklistInspectionRepository = checklistInspectionRepository;
+        this.checklistMapper = checklistMapper;
+    }
 
     @Transactional
     @Auditable(entityType = "CHECKLIST_INSPECTION", operation = AuditOperation.CRIACAO)
@@ -64,26 +75,26 @@ public class ChecklistService {
         inspection.setItems(items);
 
         ChecklistInspection saved = checklistInspectionRepository.save(inspection);
-        return toDto(saved);
+        return checklistMapper.toInspectionDto(saved);
     }
 
     @Transactional(readOnly = true)
     public Page<ChecklistInspectionDto> listChecklists(UUID vehicleId, Pageable pageable) {
         getVehicle(vehicleId);
-        return checklistInspectionRepository.findAll(pageable).map(this::toDto);
+        return checklistInspectionRepository.findByVehicle_Id(vehicleId, pageable).map(checklistMapper::toInspectionDto);
     }
 
     @Transactional(readOnly = true)
     public List<ChecklistTemplateDto> listTemplates(String vehicleType) {
         if (vehicleType == null || vehicleType.isBlank()) {
-            return checklistTemplateRepository.findAll().stream().map(this::toTemplateDto).toList();
+            return checklistTemplateRepository.findAll().stream().map(checklistMapper::toTemplateDto).toList();
         }
-        return checklistTemplateRepository.findByVehicleTypeAndActiveTrue(vehicleType).stream().map(this::toTemplateDto).toList();
+        return checklistTemplateRepository.findByVehicleTypeAndActiveTrue(vehicleType).stream().map(checklistMapper::toTemplateDto).toList();
     }
 
     @Transactional(readOnly = true)
     public ChecklistTemplateDto getTemplate(UUID templateId) {
-        return toTemplateDto(getTemplateEntity(templateId));
+        return checklistMapper.toTemplateDto(getTemplateEntity(templateId));
     }
 
     @Transactional
@@ -106,7 +117,7 @@ public class ChecklistService {
         }).toList();
         template.setItems(items);
 
-        return toTemplateDto(checklistTemplateRepository.save(template));
+        return checklistMapper.toTemplateDto(checklistTemplateRepository.save(template));
     }
 
     @Transactional
@@ -116,7 +127,7 @@ public class ChecklistService {
         template.setVehicleType(dto.vehicleType());
         template.setName(dto.name());
         template.setActive(dto.active());
-        return toTemplateDto(checklistTemplateRepository.save(template));
+        return checklistMapper.toTemplateDto(checklistTemplateRepository.save(template));
     }
 
     private Vehicle getVehicle(UUID vehicleId) {
@@ -127,34 +138,5 @@ public class ChecklistService {
     private ChecklistTemplate getTemplateEntity(UUID templateId) {
         return checklistTemplateRepository.findById(templateId)
                 .orElseThrow(() -> new ResourceNotFoundException("CHECKLIST_TEMPLATE_NOT_FOUND", "Checklist template not found"));
-    }
-
-    private ChecklistInspectionDto toDto(ChecklistInspection inspection) {
-        List<ChecklistInspectionItemDto> items = inspection.getItems().stream()
-                .map(i -> new ChecklistInspectionItemDto(
-                        i.getTemplateItem() == null ? null : i.getTemplateItem().getId(),
-                        i.getItemName(),
-                        i.isCritical(),
-                        i.getStatus(),
-                        i.getNotes()))
-                .toList();
-
-        return new ChecklistInspectionDto(
-                inspection.getId(),
-                inspection.getActivityId(),
-                inspection.getTemplate().getId(),
-                inspection.getPerformedBy(),
-                inspection.getPerformedAt(),
-                inspection.getNotes(),
-                items,
-                inspection.hasCriticalFailures()
-        );
-    }
-
-    private ChecklistTemplateDto toTemplateDto(ChecklistTemplate template) {
-        List<ChecklistTemplateItemDto> items = template.getItems().stream()
-                .map(i -> new ChecklistTemplateItemDto(i.getId(), i.getItemName(), i.isCritical(), i.getDisplayOrder()))
-                .toList();
-        return new ChecklistTemplateDto(template.getId(), template.getVehicleType(), template.getName(), template.isActive(), items);
     }
 }

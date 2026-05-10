@@ -2,7 +2,6 @@ package pt.xavier.tms.vehicle.api;
 
 import java.util.List;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,10 +18,13 @@ import pt.xavier.tms.vehicle.service.VehicleDocumentService;
 
 @RestController
 @RequestMapping("/api/v1/vehicles/{id}/documents")
-@RequiredArgsConstructor
 public class VehicleDocumentController {
 
     private final VehicleDocumentService vehicleDocumentService;
+
+    public VehicleDocumentController(VehicleDocumentService vehicleDocumentService) {
+        this.vehicleDocumentService = vehicleDocumentService;
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<VehicleDocumentDto>>> list(@PathVariable("id") UUID vehicleId) {

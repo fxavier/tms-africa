@@ -94,4 +94,48 @@ public class VehicleDocument {
         this.deletedAt = Instant.now();
         this.deletedBy = deletedByUser;
     }
+
+    public FileRecord getFile() {
+        return file;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void setDocumentType(VehicleDocumentType documentType) {
+        this.documentType = documentType;
+    }
+
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public void setIssueDate(LocalDate issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public void setExpiryDate(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setIssuingEntity(String issuingEntity) {
+        this.issuingEntity = issuingEntity;
+    }
+
+    public void setStatus(DocumentStatus status) {
+        this.status = status;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setFile(FileRecord file) {
+        this.file = file;
+    }
 }

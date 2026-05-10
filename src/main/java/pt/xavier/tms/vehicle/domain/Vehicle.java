@@ -104,4 +104,16 @@ public class Vehicle {
         this.deletedAt = Instant.now();
         this.deletedBy = deletedByUser;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setStatus(VehicleStatus status) {
+        this.status = status;
+    }
 }

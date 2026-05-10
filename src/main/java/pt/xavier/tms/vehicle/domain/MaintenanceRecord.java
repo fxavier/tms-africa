@@ -85,4 +85,64 @@ public class MaintenanceRecord {
     @LastModifiedBy
     @Column(name = "updated_by", nullable = false, length = 100)
     private String updatedBy;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void setMaintenanceType(MaintenanceType maintenanceType) {
+        this.maintenanceType = maintenanceType;
+    }
+
+    public void setPerformedAt(LocalDate performedAt) {
+        this.performedAt = performedAt;
+    }
+
+    public void setMileageAtService(Integer mileageAtService) {
+        this.mileageAtService = mileageAtService;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public void setPartsReplaced(String partsReplaced) {
+        this.partsReplaced = partsReplaced;
+    }
+
+    public LocalDate getNextMaintenanceDate() {
+        return nextMaintenanceDate;
+    }
+
+    public void setNextMaintenanceDate(LocalDate nextMaintenanceDate) {
+        this.nextMaintenanceDate = nextMaintenanceDate;
+    }
+
+    public void setNextMaintenanceMileage(Integer nextMaintenanceMileage) {
+        this.nextMaintenanceMileage = nextMaintenanceMileage;
+    }
+
+    public void setResponsibleUser(String responsibleUser) {
+        this.responsibleUser = responsibleUser;
+    }
 }

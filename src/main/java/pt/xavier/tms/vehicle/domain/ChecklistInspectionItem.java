@@ -73,4 +73,40 @@ public class ChecklistInspectionItem {
     public boolean isCritical() {
         return critical;
     }
+
+    public ChecklistItemStatus getStatus() {
+        return status;
+    }
+
+    public ChecklistTemplateItem getTemplateItem() {
+        return templateItem;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setInspection(ChecklistInspection inspection) {
+        this.inspection = inspection;
+    }
+
+    public void setTemplateItem(ChecklistTemplateItem templateItem) {
+        this.templateItem = templateItem;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public void setCritical(boolean critical) {
+        this.critical = critical;
+    }
+
+    public void setStatus(ChecklistItemStatus status) {
+        this.status = status;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }

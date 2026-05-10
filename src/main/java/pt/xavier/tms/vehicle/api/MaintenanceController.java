@@ -3,7 +3,6 @@ package pt.xavier.tms.vehicle.api;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -24,10 +23,13 @@ import pt.xavier.tms.vehicle.service.MaintenanceService;
 @Validated
 @RestController
 @RequestMapping("/api/v1/vehicles/{id}/maintenance")
-@RequiredArgsConstructor
 public class MaintenanceController {
 
     private final MaintenanceService maintenanceService;
+
+    public MaintenanceController(MaintenanceService maintenanceService) {
+        this.maintenanceService = maintenanceService;
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<PagedResponse<MaintenanceRecordDto>>> list(

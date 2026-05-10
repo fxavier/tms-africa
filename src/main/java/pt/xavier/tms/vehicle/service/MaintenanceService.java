@@ -1,7 +1,6 @@
 package pt.xavier.tms.vehicle.service;
 
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,16 +13,28 @@ import pt.xavier.tms.vehicle.domain.MaintenanceRecord;
 import pt.xavier.tms.vehicle.domain.Vehicle;
 import pt.xavier.tms.vehicle.dto.MaintenanceRecordDto;
 import pt.xavier.tms.vehicle.event.MaintenanceRegisteredEvent;
+import pt.xavier.tms.vehicle.mapper.MaintenanceMapper;
 import pt.xavier.tms.vehicle.repository.MaintenanceRepository;
 import pt.xavier.tms.vehicle.repository.VehicleRepository;
 
 @Service
-@RequiredArgsConstructor
 public class MaintenanceService {
 
     private final VehicleRepository vehicleRepository;
     private final MaintenanceRepository maintenanceRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final MaintenanceMapper maintenanceMapper;
+
+    public MaintenanceService(
+            VehicleRepository vehicleRepository,
+            MaintenanceRepository maintenanceRepository,
+            ApplicationEventPublisher eventPublisher,
+            MaintenanceMapper maintenanceMapper) {
+        this.vehicleRepository = vehicleRepository;
+        this.maintenanceRepository = maintenanceRepository;
+        this.eventPublisher = eventPublisher;
+        this.maintenanceMapper = maintenanceMapper;
+    }
 
     @Transactional
     @Auditable(entityType = "MAINTENANCE", operation = AuditOperation.CRIACAO)
@@ -47,13 +58,13 @@ public class MaintenanceService {
         if (saved.getNextMaintenanceDate() != null) {
             eventPublisher.publishEvent(new MaintenanceRegisteredEvent(saved.getVehicle().getId(), saved.getId(), saved.getNextMaintenanceDate()));
         }
-        return toDto(saved);
+        return maintenanceMapper.toDto(saved);
     }
 
     @Transactional(readOnly = true)
     public Page<MaintenanceRecordDto> listMaintenance(UUID vehicleId, Pageable pageable) {
         getVehicle(vehicleId);
-        return maintenanceRepository.findByVehicle_Id(vehicleId, pageable).map(this::toDto);
+        return maintenanceRepository.findByVehicle_Id(vehicleId, pageable).map(maintenanceMapper::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -61,27 +72,11 @@ public class MaintenanceService {
         getVehicle(vehicleId);
         MaintenanceRecord record = maintenanceRepository.findById(maintenanceId)
                 .orElseThrow(() -> new ResourceNotFoundException("MAINTENANCE_NOT_FOUND", "Maintenance record not found"));
-        return toDto(record);
+        return maintenanceMapper.toDto(record);
     }
 
     private Vehicle getVehicle(UUID vehicleId) {
         return vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("VEHICLE_NOT_FOUND", "Vehicle not found"));
-    }
-
-    private MaintenanceRecordDto toDto(MaintenanceRecord record) {
-        return new MaintenanceRecordDto(
-                record.getId(),
-                record.getMaintenanceType(),
-                record.getPerformedAt(),
-                record.getMileageAtService(),
-                record.getDescription(),
-                record.getSupplier(),
-                record.getTotalCost(),
-                record.getPartsReplaced(),
-                record.getNextMaintenanceDate(),
-                record.getNextMaintenanceMileage(),
-                record.getResponsibleUser()
-        );
     }
 }

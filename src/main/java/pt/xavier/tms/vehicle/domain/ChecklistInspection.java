@@ -78,4 +78,40 @@ public class ChecklistInspection {
         return items.stream().anyMatch(item -> item.isCritical()
                 && (item.getStatus() == ChecklistItemStatus.AVARIA || item.getStatus() == ChecklistItemStatus.FALTA));
     }
+
+    public ChecklistTemplate getTemplate() {
+        return template;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void setActivityId(UUID activityId) {
+        this.activityId = activityId;
+    }
+
+    public void setTemplate(ChecklistTemplate template) {
+        this.template = template;
+    }
+
+    public void setPerformedBy(String performedBy) {
+        this.performedBy = performedBy;
+    }
+
+    public void setPerformedAt(Instant performedAt) {
+        this.performedAt = performedAt;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public void setItems(List<ChecklistInspectionItem> items) {
+        this.items = items;
+    }
 }

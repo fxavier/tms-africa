@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pt.xavier.tms.shared.dto.ApiResponse;
 import pt.xavier.tms.shared.dto.PagedResponse;
 import pt.xavier.tms.shared.enums.VehicleStatus;
+import pt.xavier.tms.vehicle.dto.VehicleConsolidatedDto;
 import pt.xavier.tms.vehicle.dto.VehicleCreateDto;
 import pt.xavier.tms.vehicle.dto.VehicleResponseDto;
 import pt.xavier.tms.vehicle.dto.VehicleUpdateDto;
@@ -32,10 +33,13 @@ import pt.xavier.tms.vehicle.service.VehicleService;
 @Validated
 @RestController
 @RequestMapping("/api/v1/vehicles")
-@RequiredArgsConstructor
 public class VehicleController {
 
     private final VehicleService vehicleService;
+
+    public VehicleController(VehicleService vehicleService) {
+        this.vehicleService = vehicleService;
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<VehicleResponseDto>> createVehicle(@Valid @RequestBody VehicleCreateDto dto) {
@@ -67,7 +71,7 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}/consolidated")
-    public ResponseEntity<ApiResponse<VehicleResponseDto>> getConsolidated(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<VehicleConsolidatedDto>> getConsolidated(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(vehicleService.getConsolidated(id)));
     }
 
