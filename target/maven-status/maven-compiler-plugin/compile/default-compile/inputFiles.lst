@@ -3,7 +3,14 @@
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/alert/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/annotation/Auditable.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/annotation/package-info.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/api/AuditController.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/aspect/AuditAspect.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/domain/AuditLog.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/dto/AuditLogResponseDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/event/AuditEvent.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/package-info.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/repository/AuditLogRepository.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/service/AuditService.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/driver/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/hr/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/integration/adapter/InternalHrDriverAvailabilityAdapter.java

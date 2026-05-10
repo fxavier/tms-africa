@@ -177,7 +177,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar `VehicleConsolidatedDto` e lógica de montagem no `VehicleService.getConsolidated()` agregando dados de documentos, acessórios, manutenções, checklists, atividades ativas e alertas ativos
   - _Requisitos: 10.2, 10.4, 10.5_
 
-- [ ] 14. Implementar módulo `audit` — AOP, eventos e persistência
+- [x] 14. Implementar módulo `audit` — AOP, eventos e persistência
   - Criar anotação `@Auditable(entityType, operation)` em `audit/annotation`
   - Criar record `AuditEvent` com campos `entityType`, `entityId`, `operation`, `performedBy`, `ipAddress`, `previousValues`, `newValues`, `occurredAt` e factory method `AuditEvent.of(...)`
   - Criar `AuditAspect` com `@Around("@annotation(auditable)")` que captura estado anterior (para UPDATE/DELETE), executa o método, captura estado posterior, extrai `entityId` do resultado, e publica `AuditEvent` via `ApplicationEventPublisher`
