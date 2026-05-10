@@ -32,6 +32,12 @@ management:
     env:
       enabled: true
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 info:
   app:
     name: ${spring.application.name}
@@ -50,6 +56,10 @@ tms:
     local-base-path: ./storage
     max-file-size-bytes: 10485760
     s3-region: us-east-1
+  hr:
+    allowed-driver-function-codes:
+      - DRIVER
+      - MOTORISTA
   superuser:
     username: ${TMS_SUPERUSER_USERNAME:superuser}
     password: ${TMS_SUPERUSER_PASSWORD:ChangeMe123!}

@@ -7,6 +7,6 @@ public record DriverAvailabilityDto(
         UUID driverId,
         boolean available,
         String reason,
-        List<RhAbsenceDto> absences
+        List<EmployeeAbsenceDto> absences
 ) {
 }

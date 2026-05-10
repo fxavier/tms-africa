@@ -205,7 +205,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
     - Usar Testcontainers com PostgreSQL real
     - _Requisitos: 1.3, 10.2, 10.6_
 
-- [ ] 16. Checkpoint — Módulo Vehicle completo
+- [x] 16. Checkpoint — Módulo Vehicle completo
   - Verificar que CRUD completo de viaturas funciona via API
   - Verificar que upload de ficheiro PDF/JPG/PNG com limite de 10 MB funciona
   - Verificar que pesquisa parcial por matrícula retorna resultados
@@ -449,36 +449,36 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 ### Fase 3 — Módulo Driver (Semanas 6–7)
 
-- [ ] 17. Criar migrations Flyway para o módulo Driver
+- [x] 17. Criar migrations Flyway para o módulo Driver
   - Criar `V2__create_drivers.sql` com tabela `drivers` (UUID PK, `full_name`, `phone`, `address`, `id_number` UNIQUE, `license_number` UNIQUE, `license_category`, `license_issue_date`, `license_expiry_date`, `activity_location`, `status` com CHECK, `notes`, campos de auditoria, soft delete)
   - Criar `V4c__create_driver_documents.sql` com tabela `driver_documents` (UUID PK, `driver_id` FK, `document_type` com CHECK, `document_number`, `issue_date`, `expiry_date`, `issuing_entity`, `category`, `status` com CHECK, `notes`, `file_id` FK, campos de auditoria, soft delete)
   - Adicionar a `V10__create_indexes.sql` (ou nova migration `V10b`) os índices: `idx_drivers_status`, `idx_drivers_license_expiry`, `idx_drivers_location`, `idx_driver_docs_driver`, `idx_driver_docs_expiry`
   - _Requisitos: 6.1, 6.4, 14.5_
 
-- [ ] 18. Implementar entidades JPA do módulo Driver
+- [x] 18. Implementar entidades JPA do módulo Driver
   - Criar `Driver.java` com `@Entity`, `@Table(name="drivers")`, `@SQLRestriction("deleted_at IS NULL")`, `@EntityListeners(AuditingEntityListener.class)`, todos os campos mapeados incluindo `licenseExpiryDate`, relação `@OneToMany` para `DriverDocument`, e método `softDelete(String deletedBy)`
   - Criar `DriverDocument.java` com `@Entity`, `@SQLRestriction("deleted_at IS NULL")`, relação `@ManyToOne` para `Driver` e `FileRecord`, campo `category` para categoria da carta de condução
   - _Requisitos: 6.1, 6.4, 6.5_
 
-- [ ] 19. Implementar repositórios do módulo Driver
+- [x] 19. Implementar repositórios do módulo Driver
   - Criar `DriverRepository` com queries: `findByIdNumber(String idNumber)`, `existsByIdNumber(String idNumber)`, `existsByLicenseNumber(String licenseNumber)`, `findAllByFilters(status, location, Pageable)` com `@Query` JPQL
   - Criar `DriverDocumentRepository` com queries: `findByDriverId(UUID driverId)`, `findByDriverIdAndDocumentType(UUID driverId, DriverDocumentType type)`, `findByExpiryDateBetweenAndStatusNot(LocalDate from, LocalDate to, DocumentStatus status)`, `findByExpiryDateBeforeAndStatusNot(LocalDate date, DocumentStatus status)`
   - _Requisitos: 6.6, 6.7, 14.5_
 
-- [ ] 20. Implementar adaptadores de integração RH com cache Caffeine
+- [x] 20. Implementar adaptadores de integração RH com cache Caffeine
   - Criar `RhRestAdapter` com `@ConditionalOnProperty(name="tms.integration.rh.mode", havingValue="rest")`, injetar `Cache<String, DriverAvailabilityDto>` Caffeine, implementar `checkAvailability()` com cache key `driverId:startDate:endDate`, chamada REST ao RH_Sistema com `RestTemplate`, tratamento de `RestClientException` lançando `RhIntegrationException`
   - Criar `RhModuleAdapter` com `@ConditionalOnProperty(name="tms.integration.rh.mode", havingValue="module")` como stub para desenvolvimento (retorna sempre disponível)
   - Criar `RhIntegrationConfig` com `@ConfigurationProperties(prefix="tms.integration.rh")`, bean `Cache<String, DriverAvailabilityDto>` Caffeine com `expireAfterWrite(cacheTtlMinutes, MINUTES)` e `maximumSize(1000)`, bean `RestTemplate` com timeouts configuráveis e interceptor de API key
   - Criar `RhIntegrationException` em `integration/exception`
   - _Requisitos: 7.1, 7.4, 13.1, 13.2, 13.3, 13.5_
 
-- [ ] 21. Implementar serviços do módulo Driver
+- [x] 21. Implementar serviços do módulo Driver
   - Criar `DriverService` com métodos: `createDriver(DriverCreateDto)` (valida unicidade de `idNumber` e `licenseNumber`), `updateDriver(UUID, DriverUpdateDto)`, `updateStatus(UUID, DriverStatus)`, `deleteDriver(UUID)` (soft delete), `getDriver(UUID)`, `listDrivers(filtros, Pageable)`, `getAvailability(UUID driverId)` (chama `RhIntegrationPort`, trata `RhIntegrationException`) — anotar métodos de escrita com `@Auditable`
   - Criar `DriverDocumentService` com métodos: `addDocument(UUID driverId, DriverDocumentDto)`, `updateDocument(UUID driverId, UUID docId, DriverDocumentDto)`, `listDocuments(UUID driverId)` — anotar com `@Auditable`
   - Implementar lógica de verificação de carta de condução expirada: quando `licenseExpiryDate < LocalDate.now()`, o estado do documento deve ser `EXPIRADO`
   - _Requisitos: 6.1, 6.2, 6.3, 6.6, 6.7, 6.8, 7.5_
 
-- [ ] 22. Implementar controllers REST do módulo Driver
+- [x] 22. Implementar controllers REST do módulo Driver
   - Criar `DriverController` com endpoints: `POST /api/v1/drivers`, `GET /api/v1/drivers`, `GET /api/v1/drivers/{id}`, `PUT /api/v1/drivers/{id}`, `PATCH /api/v1/drivers/{id}/status`, `DELETE /api/v1/drivers/{id}`, `GET /api/v1/drivers/{id}/availability`
   - Criar `DriverDocumentController` com endpoints: `GET /api/v1/drivers/{id}/documents`, `POST /api/v1/drivers/{id}/documents`, `PUT /api/v1/drivers/{id}/documents/{docId}`
   - Criar endpoint `POST /api/v1/integration/rh/availability` para webhook de notificação de alteração de disponibilidade do RH
@@ -486,18 +486,18 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - **Nota:** `@PreAuthorize` será adicionado na Fase 6c (refatoração de segurança)
   - _Requisitos: 6.1, 6.9, 7.1, 7.5, 13.6, 15.7_
 
-- [ ] 23. Escrever testes unitários do módulo Driver
-  - [ ]\* 23.1 Escrever testes unitários do `DriverService`
+- [x] 23. Escrever testes unitários do módulo Driver
+  - [x]\* 23.1 Escrever testes unitários do `DriverService`
     - Testar criação com `idNumber` duplicado lança `BusinessException`
     - Testar `getAvailability()` quando RH retorna indisponível
     - Testar `getAvailability()` quando `RhIntegrationException` é lançada (fallback)
     - _Requisitos: 7.2, 7.3, 7.4_
-  - [ ]\* 23.2 Escrever testes unitários do `RhRestAdapter`
+  - [x]\* 23.2 Escrever testes unitários do `RhRestAdapter`
     - Testar que segunda chamada com mesma chave usa cache (sem chamada HTTP)
     - Testar que `RhIntegrationException` é lançada quando REST falha
     - _Requisitos: 13.5_
 
-- [ ] 24. Checkpoint — Módulo Driver completo
+- [x] 24. Checkpoint — Módulo Driver completo
   - Verificar que CRUD completo de motoristas funciona via API
   - Verificar que consulta de disponibilidade retorna dados do RH (ou fallback com mensagem)
   - Verificar que cache de disponibilidade funciona (segunda chamada usa cache)
@@ -508,7 +508,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 ### Fase 4 — Módulo Activity (Semanas 8–10)
 
-- [ ] 25. Criar migrations Flyway para o módulo Activity
+- [x] 25. Criar migrations Flyway para o módulo Activity
   - Criar `V3__create_activities.sql` com tabela `activities` (UUID PK, `code` UNIQUE, `title`, `activity_type`, `location`, `planned_start` TIMESTAMPTZ, `planned_end` TIMESTAMPTZ, `actual_start`, `actual_end`, `priority` com CHECK, `status` com CHECK, `vehicle_id` FK, `driver_id` FK, `description`, `notes`, `rh_override_justification`, campos de auditoria, soft delete)
   - Criar `V3b__create_activity_events.sql` com tabela `activity_events` (UUID PK, `activity_id` FK, `event_type`, `previous_status`, `new_status`, `performed_by`, `performed_at`, `notes`, `created_at`, `created_by`)
   - Adicionar índices: `idx_activities_status`, `idx_activities_vehicle`, `idx_activities_driver`, `idx_activities_planned_start`, `idx_activities_code`, `idx_activity_events_activity`
