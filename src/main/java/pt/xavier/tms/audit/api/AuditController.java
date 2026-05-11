@@ -1,6 +1,8 @@
 package pt.xavier.tms.audit.api;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pt.xavier.tms.audit.domain.AuditLog;
+import pt.xavier.tms.audit.dto.AuditQueryDto;
 import pt.xavier.tms.audit.dto.AuditLogResponseDto;
 import pt.xavier.tms.audit.service.AuditService;
 import pt.xavier.tms.shared.dto.ApiResponse;
@@ -29,15 +32,24 @@ public class AuditController {
     @GetMapping
     public ResponseEntity<ApiResponse<PagedResponse<AuditLogResponseDto>>> list(
             @RequestParam(required = false) String entityType,
+            @RequestParam(required = false) UUID entityId,
             @RequestParam(required = false) AuditOperation operation,
             @RequestParam(required = false) String performedBy,
-            @RequestParam(required = false) Instant from,
-            @RequestParam(required = false) Instant to,
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+        AuditQueryDto query = new AuditQueryDto(entityType, entityId, operation, performedBy, from, to);
         Pageable pageable = PageRequest.of(page, size);
-        Page<AuditLogResponseDto> result = auditService.list(entityType, operation, performedBy, from, to, pageable)
+        Page<AuditLogResponseDto> result = auditService.list(
+                        query.entityType(),
+                        query.entityId(),
+                        query.operation(),
+                        query.performedBy(),
+                        toStartOfDay(query.from()),
+                        toEndOfDay(query.to()),
+                        pageable)
                 .map(this::toDto);
 
         PagedResponse<AuditLogResponseDto> response = new PagedResponse<>(
@@ -61,5 +73,13 @@ public class AuditController {
                 log.getPreviousValues(),
                 log.getNewValues(),
                 log.getOccurredAt());
+    }
+
+    private Instant toStartOfDay(LocalDate date) {
+        return date == null ? null : date.atStartOfDay().toInstant(ZoneOffset.UTC);
+    }
+
+    private Instant toEndOfDay(LocalDate date) {
+        return date == null ? null : date.plusDays(1).atStartOfDay().toInstant(ZoneOffset.UTC).minusNanos(1);
     }
 }

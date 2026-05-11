@@ -602,7 +602,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 ### Fase 5 — Módulo Alert (Semana 11)
 
-- [ ] 34. Criar migrations Flyway para o módulo Alert
+- [x] 34. Criar migrations Flyway para o módulo Alert
   - Criar `V7__create_alerts.sql` com tabela `alerts` (UUID PK, `alert_type` com CHECK, `severity` com CHECK, `entity_type`, `entity_id`, `title`, `message`, `is_resolved` DEFAULT FALSE, `resolved_at`, `resolved_by`, campos de auditoria)
   - Adicionar índice único de deduplicação: `CREATE UNIQUE INDEX idx_alerts_dedup ON alerts(alert_type, entity_id) WHERE is_resolved = FALSE`
   - Adicionar índices: `idx_alerts_entity`, `idx_alerts_is_resolved`, `idx_alerts_severity`
@@ -610,17 +610,17 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Inserir dados iniciais de configuração padrão em `alert_configurations` para tipos `DOCUMENT_EXPIRING` (VEHICLE_DOCUMENT e DRIVER_DOCUMENT) e `MAINTENANCE_DUE` (MAINTENANCE_RECORD)
   - _Requisitos: 11.1, 11.5, 11.7, 11.9_
 
-- [ ] 35. Implementar entidades JPA do módulo Alert
+- [x] 35. Implementar entidades JPA do módulo Alert
   - Criar `Alert.java` com `@Entity`, `@EntityListeners(AuditingEntityListener.class)`, todos os campos mapeados, e método `resolve(String resolvedBy)` que define `resolved=true`, `resolvedAt=OffsetDateTime.now()`, `resolvedBy`
   - Criar `AlertConfiguration.java` com `@Entity`, campos `alertType`, `entityType`, `daysBeforeWarning`, `daysBeforeCritical`, `isActive`, e factory method estático `AlertConfiguration.defaults(AlertType, String)` com valores padrão
   - _Requisitos: 11.5, 11.7_
 
-- [ ] 36. Implementar repositórios do módulo Alert
+- [x] 36. Implementar repositórios do módulo Alert
   - Criar `AlertRepository` com queries: `findByIsResolvedFalse(Pageable p)`, `findByIsResolvedFalseAndSeverity(AlertSeverity severity, Pageable p)`, `existsByAlertTypeAndEntityIdAndResolvedFalse(AlertType type, UUID entityId)`, `findByAlertTypeAndEntityIdAndResolvedFalse(AlertType type, UUID entityId): Optional<Alert>`, `findByAlertTypeInAndResolvedFalse(List<AlertType> types): List<Alert>`
   - Criar `AlertConfigurationRepository` com `findByAlertTypeAndEntityType(AlertType type, String entityType): Optional<AlertConfiguration>`
   - _Requisitos: 11.1, 11.8, 11.9_
 
-- [ ] 37. Implementar `AlertService` com lógica de geração e deduplicação
+- [x] 37. Implementar `AlertService` com lógica de geração e deduplicação
   - Criar `AlertService` com método `checkDocumentExpiry()`:
     - Carregar `AlertConfiguration` para `DOCUMENT_EXPIRING/VEHICLE_DOCUMENT` e `DOCUMENT_EXPIRING/DRIVER_DOCUMENT` (ou usar defaults)
     - Buscar documentos de viatura com `expiryDate` entre hoje e `today + daysBeforeWarning` via `vehicleDocumentRepository.findByExpiryDateBetweenAndStatusNot()`
@@ -638,7 +638,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Criar método `resolveObsoleteAlerts()` que resolve automaticamente alertas de documentos que já não estão expirados/a expirar
   - _Requisitos: 11.1, 11.2, 11.3, 11.4, 11.8_
 
-- [ ] 38. Implementar `AlertScheduler` com job diário
+- [x] 38. Implementar `AlertScheduler` com job diário
   - Criar `AlertScheduler` com `@Component`, `@RequiredArgsConstructor`, `@Slf4j`
   - Implementar método `runDailyAlertCheck()` anotado com `@Scheduled(cron = "${tms.scheduling.alert-check-cron:0 0 6 * * *}")` e `@Transactional`
   - O método deve chamar em sequência: `alertService.checkDocumentExpiry()`, `alertService.checkMaintenanceDue()`, `alertService.resolveObsoleteAlerts()`
@@ -646,15 +646,15 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Garantir que `@EnableScheduling` está ativo na aplicação principal
   - _Requisitos: 11.1, 11.2, 11.3_
 
-- [ ] 39. Implementar `AlertResolutionService` e controllers do módulo Alert
+- [x] 39. Implementar `AlertResolutionService` e controllers do módulo Alert
   - Criar `AlertResolutionService` com método `resolveManually(UUID alertId, String resolvedBy)` que carrega o alerta, chama `alert.resolve(resolvedBy)` e persiste
   - Criar `AlertController` com endpoints: `GET /api/v1/alerts` com filtros `resolved`, `severity`, `entityType` e paginação, `GET /api/v1/alerts/{id}`, `PATCH /api/v1/alerts/{id}/resolve`
   - Criar `AlertConfigurationController` com endpoints: `GET /api/v1/alert-configurations`, `PUT /api/v1/alert-configurations/{id}`
   - **Nota:** `@PreAuthorize` será adicionado na Fase 6c (refatoração de segurança)
   - _Requisitos: 11.6, 11.7, 11.8, 11.9_
 
-- [ ] 40. Escrever testes unitários do módulo Alert
-  - [ ]\* 40.1 Escrever testes unitários do `AlertService`
+- [x] 40. Escrever testes unitários do módulo Alert
+  - [x]\* 40.1 Escrever testes unitários do `AlertService`
     - Testar `checkDocumentExpiry()` cria alerta AVISO para documento a expirar em 20 dias (dentro do período de 30 dias)
     - Testar `checkDocumentExpiry()` cria alerta CRITICO para documento a expirar em 5 dias (dentro do período de 7 dias)
     - Testar `checkDocumentExpiry()` atualiza status do documento para EXPIRADO quando `expiryDate < today`
@@ -663,7 +663,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
     - Testar `checkMaintenanceDue()` cria alerta MAINTENANCE_OVERDUE quando `nextMaintenanceDate` já passou
     - _Requisitos: 11.1, 11.2, 11.3, 11.8_
 
-- [ ] 41. Checkpoint — Módulo Alert completo
+- [x] 41. Checkpoint — Módulo Alert completo
   - Verificar que job corre às 06:00 e gera alertas para documentos a expirar
   - Verificar que alertas duplicados não são criados (deduplicação funciona)
   - Verificar que quando documento é renovado, alerta é resolvido automaticamente
@@ -674,12 +674,12 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 ### Fase 6 — Módulo Audit (Semana 12)
 
-- [ ] 42. Criar migration Flyway para o módulo Audit
+- [x] 42. Criar migration Flyway para o módulo Audit
   - Criar `V8__create_audit_logs.sql` com tabela `audit_logs` (UUID PK, `entity_type`, `entity_id`, `operation` com CHECK, `performed_by`, `performed_at`, `ip_address`, `previous_values` JSONB, `new_values` JSONB, `created_at` — **sem** `updated_at` e **sem** `deleted_at` — registo imutável)
   - Adicionar índices: `idx_audit_entity` em `(entity_type, entity_id)`, `idx_audit_performed_by`, `idx_audit_performed_at`, `idx_audit_operation`
   - _Requisitos: 12.1, 12.2, 12.3, 12.5_
 
-- [ ] 43. Verificar e completar a implementação do módulo Audit
+- [x] 43. Verificar e completar a implementação do módulo Audit
   - Confirmar que `AuditLog.java` não tem `@Setter` nem `@LastModifiedDate` (entidade imutável)
   - Confirmar que `AuditLog` só pode ser criado via factory method `AuditLog.of(...)`
   - Confirmar que `AuditLogRepository` não expõe métodos `save()` com entidade modificada (apenas `save()` para criação via `AuditService`)
@@ -688,7 +688,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Verificar que `@Auditable` está aplicado em todos os métodos de escrita de `VehicleService`, `DriverService`, `ActivityService`
   - _Requisitos: 12.1, 12.2, 12.3_
 
-- [ ] 44. Implementar `AuditController` com interface de consulta
+- [x] 44. Implementar `AuditController` com interface de consulta
   - Criar `AuditController` com endpoint `GET /api/v1/audit` com parâmetros de filtro: `entityType` (String), `entityId` (UUID), `operation` (AuditOperation), `performedBy` (String), `from` (LocalDate), `to` (LocalDate), e paginação
   - Criar endpoint `GET /api/v1/audit/{id}` para detalhe de registo
   - Garantir que **não existe** nenhum endpoint `POST`, `PUT`, `PATCH` ou `DELETE` em `/api/v1/audit` (imutabilidade garantida ao nível da API)
@@ -696,8 +696,8 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - **Nota:** `@PreAuthorize` (apenas ADMIN e AUDITOR) será adicionado na Fase 6c (refatoração de segurança)
   - _Requisitos: 12.3, 12.4_
 
-- [ ] 45. Escrever testes de integração do módulo Audit
-  - [ ]\* 45.1 Escrever testes de integração de auditoria
+- [x] 45. Escrever testes de integração do módulo Audit
+  - [x]\* 45.1 Escrever testes de integração de auditoria
     - Testar que `POST /api/v1/vehicles` gera registo de auditoria com `operation = CRIACAO` e `entityType = VEHICLE`
     - Testar que `PUT /api/v1/vehicles/{id}` gera registo com `operation = ATUALIZACAO` e `previousValues`/`newValues` corretos
     - Testar que `PATCH /api/v1/activities/{id}/status` gera registo com estado anterior e novo

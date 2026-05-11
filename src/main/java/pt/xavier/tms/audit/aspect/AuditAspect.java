@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import pt.xavier.tms.audit.annotation.Auditable;
 import pt.xavier.tms.audit.event.AuditEvent;
 import pt.xavier.tms.security.SecurityUtils;
+import pt.xavier.tms.shared.enums.AuditOperation;
 
 @Aspect
 @Component
@@ -24,7 +25,7 @@ public class AuditAspect {
 
     @Around("@annotation(auditable)")
     public Object around(ProceedingJoinPoint joinPoint, Auditable auditable) throws Throwable {
-        Map<String, Object> previousValues = Map.of();
+        Map<String, Object> previousValues = extractPreviousValues(joinPoint, auditable.operation());
         Object result = joinPoint.proceed();
         Map<String, Object> newValues = asMap(result);
         UUID entityId = extractEntityId(result);
@@ -63,5 +64,19 @@ public class AuditAspect {
         } catch (IllegalArgumentException ex) {
             return null;
         }
+    }
+
+    private Map<String, Object> extractPreviousValues(ProceedingJoinPoint joinPoint, AuditOperation operation) {
+        if (operation == AuditOperation.CRIACAO) {
+            return Map.of();
+        }
+        Object[] args = joinPoint.getArgs();
+        if (args == null || args.length == 0 || args[0] == null) {
+            return Map.of();
+        }
+        if (args[0] instanceof UUID id) {
+            return Map.of("id", id);
+        }
+        return asMap(args[0]);
     }
 }
