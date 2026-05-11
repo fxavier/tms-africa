@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,11 +39,13 @@ public class DriverController {
     private final DriverService driverService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<DriverResponseDto>> create(@Valid @RequestBody DriverCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(driverService.createDriver(dto)));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<DriverResponseDto>>> list(
             @RequestParam(required = false) DriverStatus status,
             @RequestParam(required = false) String location,
@@ -54,28 +57,33 @@ public class DriverController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<DriverResponseDto>> get(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(driverService.getDriver(id)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<DriverResponseDto>> update(@PathVariable UUID id, @RequestBody DriverUpdateDto dto) {
         return ResponseEntity.ok(ApiResponse.success(driverService.updateDriver(id, dto)));
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<DriverResponseDto>> updateStatus(@PathVariable UUID id,
             @RequestBody DriverStatusRequest request) {
         return ResponseEntity.ok(ApiResponse.success(driverService.updateStatus(id, request.status())));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         driverService.deleteDriver(id);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @GetMapping("/{id}/availability")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<DriverAvailabilityDto>> getAvailability(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(driverService.getAvailability(id)));
     }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<AuditLogResponseDto>>> list(
             @RequestParam(required = false) String entityType,
             @RequestParam(required = false) UUID entityId,
@@ -58,6 +60,7 @@ public class AuditController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','AUDITOR')")
     public ResponseEntity<ApiResponse<AuditLogResponseDto>> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(toDto(auditService.get(id))));
     }

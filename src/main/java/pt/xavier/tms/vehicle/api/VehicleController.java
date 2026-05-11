@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,11 +43,13 @@ public class VehicleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<VehicleResponseDto>> createVehicle(@Valid @RequestBody VehicleCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(vehicleService.createVehicle(dto)));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<VehicleResponseDto>>> listVehicles(
             @RequestParam(required = false) VehicleStatus status,
             @RequestParam(required = false) String location,
@@ -57,6 +60,7 @@ public class VehicleController {
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<VehicleResponseDto>>> searchVehicles(
             @RequestParam String q,
             @RequestParam(defaultValue = "0") int page,
@@ -66,28 +70,33 @@ public class VehicleController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<VehicleResponseDto>> getVehicle(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(vehicleService.getVehicle(id)));
     }
 
     @GetMapping("/{id}/consolidated")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<VehicleConsolidatedDto>> getConsolidated(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(vehicleService.getConsolidated(id)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<VehicleResponseDto>> updateVehicle(@PathVariable UUID id,
             @Valid @RequestBody VehicleUpdateDto dto) {
         return ResponseEntity.ok(ApiResponse.success(vehicleService.updateVehicle(id, dto)));
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<VehicleResponseDto>> updateStatus(@PathVariable UUID id,
             @Valid @RequestBody VehicleStatusRequest request) {
         return ResponseEntity.ok(ApiResponse.success(vehicleService.updateStatus(id, request.status())));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteVehicle(@PathVariable UUID id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.ok(ApiResponse.success(null));

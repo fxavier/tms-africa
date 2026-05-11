@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,7 @@ public class ChecklistController {
     }
 
     @GetMapping("/api/v1/vehicles/{id}/checklists")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<ChecklistInspectionDto>>> listVehicleChecklists(
             @PathVariable("id") UUID vehicleId,
             @RequestParam(defaultValue = "0") int page,
@@ -43,6 +45,7 @@ public class ChecklistController {
     }
 
     @PostMapping("/api/v1/vehicles/{id}/checklists")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<ChecklistInspectionDto>> submitChecklist(
             @PathVariable("id") UUID vehicleId,
             @RequestBody ChecklistInspectionDto dto) {
@@ -51,17 +54,20 @@ public class ChecklistController {
     }
 
     @GetMapping("/api/v1/checklist-templates")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<List<ChecklistTemplateDto>>> listTemplates(
             @RequestParam(required = false) String vehicleType) {
         return ResponseEntity.ok(ApiResponse.success(checklistService.listTemplates(vehicleType)));
     }
 
     @PostMapping("/api/v1/checklist-templates")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<ChecklistTemplateDto>> createTemplate(@RequestBody ChecklistTemplateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(checklistService.createTemplate(dto)));
     }
 
     @PutMapping("/api/v1/checklist-templates/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<ChecklistTemplateDto>> updateTemplate(@PathVariable UUID id,
             @RequestBody ChecklistTemplateDto dto) {
         return ResponseEntity.ok(ApiResponse.success(checklistService.updateTemplate(id, dto)));

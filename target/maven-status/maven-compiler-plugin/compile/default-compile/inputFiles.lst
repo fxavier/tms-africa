@@ -90,6 +90,10 @@
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/integration/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/integration/port/DriverAvailabilityPort.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/integration/port/FileStoragePort.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/ActivitySecurityService.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/KeycloakJwtAuthenticationConverter.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/RateLimitConfig.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/RateLimitFilter.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/SecurityConfig.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/SecurityUtils.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/security/package-info.java
@@ -157,6 +161,7 @@
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/ChecklistTemplateDto.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/ChecklistTemplateItemDto.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/MaintenanceRecordDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/VehicleAccessoryCreateDto.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/VehicleAccessoryDto.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/VehicleConsolidatedDto.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/vehicle/dto/VehicleCreateDto.java

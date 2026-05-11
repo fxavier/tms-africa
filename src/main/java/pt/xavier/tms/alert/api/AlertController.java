@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class AlertController {
     private final AlertResolutionService alertResolutionService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<AlertResponseDto>>> list(
             @RequestParam(required = false) Boolean resolved,
             @RequestParam(required = false) AlertSeverity severity,
@@ -48,6 +50,7 @@ public class AlertController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<AlertResponseDto>> get(@PathVariable UUID id) {
         Alert alert = alertRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ALERT_NOT_FOUND", "Alert not found"));
@@ -55,6 +58,7 @@ public class AlertController {
     }
 
     @PatchMapping("/{id}/resolve")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<AlertResponseDto>> resolve(@PathVariable UUID id,
             @RequestBody ResolveAlertRequest request) {
         Alert resolved = alertResolutionService.resolveManually(id, request.resolvedBy() == null ? "system" : request.resolvedBy());

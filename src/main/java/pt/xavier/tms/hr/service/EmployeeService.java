@@ -1,9 +1,12 @@
 package pt.xavier.tms.hr.service;
 
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.xavier.tms.hr.domain.Employee;
@@ -67,7 +70,7 @@ public class EmployeeService {
 
     @Transactional(readOnly = true)
     public Page<EmployeeResponseDto> listEmployees(EmployeeStatus status, UUID functionId, String q, Pageable pageable) {
-        return repository.findAllByFilters(status, functionId, q, pageable).map(mapper::toDto);
+        return repository.findAll(buildEmployeeFilters(status, functionId, q), pageable).map(mapper::toDto);
     }
 
     @Transactional(readOnly = true)
@@ -122,5 +125,25 @@ public class EmployeeService {
             entity.setCurrency(currency);
         }
         entity.setNotes(notes);
+    }
+
+    private Specification<Employee> buildEmployeeFilters(EmployeeStatus status, UUID functionId, String q) {
+        return (root, query, criteriaBuilder) -> {
+            var predicates = new ArrayList<Predicate>();
+            if (status != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), status));
+            }
+            if (functionId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("function").get("id"), functionId));
+            }
+            if (q != null && !q.isBlank()) {
+                String term = "%" + q.toLowerCase() + "%";
+                predicates.add(criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), term),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("employeeNumber")), term)
+                ));
+            }
+            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
+        };
     }
 }

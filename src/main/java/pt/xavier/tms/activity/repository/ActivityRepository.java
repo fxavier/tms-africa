@@ -16,6 +16,8 @@ public interface ActivityRepository extends JpaRepository<Activity, UUID>, JpaSp
 
     Optional<Activity> findByCode(String code);
 
+    boolean existsByIdAndDriver_Id(UUID activityId, UUID driverId);
+
     long countByCodeStartingWith(String prefix);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

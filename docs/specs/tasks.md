@@ -718,7 +718,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
 
 > Todos os módulos de negócio do backend estão completos e testados. Agora implementa-se o módulo `security` real e substitui-se o stub permissivo.
 
-- [ ] 46b. Implementar módulo `security` — Keycloak JWT, RBAC e rate limiting
+- [x] 46b. Implementar módulo `security` — Keycloak JWT, RBAC e rate limiting
   - Implementar `KeycloakJwtAuthenticationConverter` que extrai roles de `realm_access.roles` e os mapeia para `ROLE_` prefixados
   - Substituir `SecurityUtils` stub pelo real: `getCurrentUserId()` lê o claim `sub` do JWT, `getCurrentIpAddress()` lê do `HttpServletRequest`, `hasRole()` verifica `GrantedAuthority`
   - Substituir `SecurityConfig` permissivo pelo real: `@EnableWebSecurity`, `@EnableMethodSecurity`, configuração stateless, `oauth2ResourceServer` com JWT, validação de assinatura via JWKS, rejeição de pedidos sem token (HTTP 401), CORS para origens `*.company.pt` e `localhost`
@@ -730,7 +730,7 @@ Este plano de implementação converte o design técnico do TMS numa sequência 
   - Verificar que `GET /actuator/health` continua a funcionar sem JWT
   - _Requisitos: 0.3, 15.1, 15.2, 15.3, 15.5_
 
-- [ ] 46c. Refatorar todos os controllers para aplicar RBAC com `@PreAuthorize`
+- [x] 46c. Refatorar todos os controllers para aplicar RBAC com `@PreAuthorize`
   - `UserController`: `@PreAuthorize("hasAnyRole('ADMIN','SUPERUSER')")` em POST/GET/PUT/PATCH/DELETE; `GET /me` sem restrição de role
   - `VehicleController`: ADMIN+GESTOR_FROTA para escrita; ADMIN+GESTOR_FROTA+OPERADOR+AUDITOR para leitura; DELETE apenas ADMIN
   - `VehicleDocumentController`, `MaintenanceController`, `ChecklistController`: ADMIN+GESTOR_FROTA para escrita; ADMIN+GESTOR_FROTA+OPERADOR+AUDITOR para leitura

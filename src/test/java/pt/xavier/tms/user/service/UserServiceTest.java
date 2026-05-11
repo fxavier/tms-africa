@@ -25,6 +25,7 @@ class UserServiceTest {
     void createUserWithDuplicateUsernameShouldThrowBusinessException() {
         UserService userService = new UserService(keycloakUserGateway);
         UserCreateDto dto = new UserCreateDto("john", "john@example.com", "John", "Doe", Set.of("OPERADOR"), true);
+        when(keycloakUserGateway.getCurrentUserRoles()).thenReturn(Set.of());
         when(keycloakUserGateway.usernameExists("john")).thenReturn(true);
 
         assertThatThrownBy(() -> userService.createUser(dto))
@@ -36,6 +37,7 @@ class UserServiceTest {
     void createUserWithDuplicateEmailShouldThrowBusinessException() {
         UserService userService = new UserService(keycloakUserGateway);
         UserCreateDto dto = new UserCreateDto("john", "john@example.com", "John", "Doe", Set.of("OPERADOR"), true);
+        when(keycloakUserGateway.getCurrentUserRoles()).thenReturn(Set.of());
         when(keycloakUserGateway.usernameExists("john")).thenReturn(false);
         when(keycloakUserGateway.emailExists("john@example.com")).thenReturn(true);
 
@@ -51,6 +53,17 @@ class UserServiceTest {
         when(keycloakUserGateway.getCurrentUserRoles()).thenReturn(Set.of("ADMIN"));
 
         assertThatThrownBy(() -> userService.updateUser("u1", dto))
+                .isInstanceOf(BusinessException.class)
+                .hasMessageContaining("ADMIN cannot assign SUPERUSER role");
+    }
+
+    @Test
+    void createUserWhenAdminAssignsSuperuserShouldThrowBusinessException() {
+        UserService userService = new UserService(keycloakUserGateway);
+        UserCreateDto dto = new UserCreateDto("john", "john@example.com", "John", "Doe", Set.of("SUPERUSER"), true);
+        when(keycloakUserGateway.getCurrentUserRoles()).thenReturn(Set.of("ADMIN"));
+
+        assertThatThrownBy(() -> userService.createUser(dto))
                 .isInstanceOf(BusinessException.class)
                 .hasMessageContaining("ADMIN cannot assign SUPERUSER role");
     }

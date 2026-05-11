@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,11 +28,13 @@ public class VehicleDocumentController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<List<VehicleDocumentDto>>> list(@PathVariable("id") UUID vehicleId) {
         return ResponseEntity.ok(ApiResponse.success(vehicleDocumentService.listDocuments(vehicleId)));
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<VehicleDocumentDto>> add(@PathVariable("id") UUID vehicleId,
             @RequestBody VehicleDocumentDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -39,6 +42,7 @@ public class VehicleDocumentController {
     }
 
     @PutMapping("/{docId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<VehicleDocumentDto>> update(@PathVariable("id") UUID vehicleId,
             @PathVariable UUID docId,
             @RequestBody VehicleDocumentDto dto) {
@@ -46,6 +50,7 @@ public class VehicleDocumentController {
     }
 
     @DeleteMapping("/{docId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("id") UUID vehicleId, @PathVariable UUID docId) {
         vehicleDocumentService.deleteDocument(vehicleId, docId);
         return ResponseEntity.ok(ApiResponse.success(null));

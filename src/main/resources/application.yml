@@ -16,6 +16,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${TMS_SECURITY_ISSUER_URI:http://localhost:8081/realms/tms}
+          jwk-set-uri: ${TMS_SECURITY_JWK_SET_URI:http://localhost:8081/realms/tms/protocol/openid-connect/certs}
 
 management:
   endpoints:
@@ -50,7 +56,11 @@ logging:
 
 tms:
   security:
-    permissive-mode: true
+    permissive-mode: false
+    rate-limit:
+      capacity: 60
+      refill-tokens: 60
+      refill-minutes: 1
   storage:
     type: local
     local-base-path: ./storage

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +27,7 @@ public class AlertConfigurationController {
     private final AlertConfigurationRepository alertConfigurationRepository;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<List<AlertConfigurationDto>>> list() {
         List<AlertConfigurationDto> items = alertConfigurationRepository.findAll().stream()
                 .map(this::toDto)
@@ -35,6 +37,7 @@ public class AlertConfigurationController {
 
     @PutMapping("/{id}")
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<AlertConfigurationDto>> update(@PathVariable UUID id,
             @RequestBody AlertConfigurationUpdateDto dto) {
         AlertConfiguration cfg = alertConfigurationRepository.findById(id)

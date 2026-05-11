@@ -76,6 +76,14 @@ class HrModuleIntegrationTest {
 
         String employeeId = read(employeeResponse, "data", "id");
 
+        mockMvc.perform(get("/api/v1/hr/employees")
+                        .param("functionId", functionId)
+                        .param("page", "0")
+                        .param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content[0].id").value(employeeId))
+                .andExpect(jsonPath("$.data.content[0].functionId").value(functionId));
+
         mockMvc.perform(post("/api/v1/hr/salary-payments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""

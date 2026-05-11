@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,11 +34,13 @@ public class EmployeeController {
     private final EmployeeService service;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> create(@Valid @RequestBody EmployeeCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(service.createEmployee(dto)));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH','GESTOR_FROTA','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<EmployeeResponseDto>>> list(
             @RequestParam(required = false) EmployeeStatus status,
             @RequestParam(required = false) UUID functionId,
@@ -49,22 +52,26 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH','GESTOR_FROTA','AUDITOR')")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> get(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(service.getEmployee(id)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> update(@PathVariable UUID id, @RequestBody EmployeeUpdateDto dto) {
         return ResponseEntity.ok(ApiResponse.success(service.updateEmployee(id, dto)));
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> updateStatus(@PathVariable UUID id,
             @RequestBody EmployeeStatusRequest request) {
         return ResponseEntity.ok(ApiResponse.success(service.updateStatus(id, request.status())));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         service.deleteEmployee(id);
         return ResponseEntity.ok(ApiResponse.success(null));

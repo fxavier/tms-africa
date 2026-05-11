@@ -3,6 +3,7 @@ package pt.xavier.tms.user.api;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,17 +27,20 @@ public class UserController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERUSER')")
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@RequestBody @Valid UserCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(userService.createUser(dto)));
     }
 
     @PatchMapping("/{id}/disable")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPERUSER')")
     public ResponseEntity<ApiResponse<Void>> disableUser(@PathVariable String id) {
         userService.setUserEnabled(id, false);
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<UserResponseDto>> getMe() {
         return ResponseEntity.ok(ApiResponse.success(userService.getMe()));
     }

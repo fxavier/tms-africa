@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,11 +42,13 @@ public class ActivityController {
     private final ActivityService activityService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR')")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> create(@RequestBody ActivityCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(activityService.createActivity(dto)));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<ActivityResponseDto>>> list(
             @RequestParam(required = false) ActivityStatus status,
             @RequestParam(required = false) UUID vehicleId,
@@ -65,34 +68,40 @@ public class ActivityController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR') or (hasRole('MOTORISTA') and @activitySecurityService.isAssignedDriver(#id))")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> get(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(activityService.getActivity(id)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR')")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> update(@PathVariable UUID id,
             @RequestBody ActivityUpdateDto dto) {
         return ResponseEntity.ok(ApiResponse.success(activityService.updateActivity(id, dto)));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR')")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> delete(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(activityService.deleteActivity(id)));
     }
 
     @PostMapping("/{id}/allocate")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR')")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> allocate(@PathVariable UUID id,
             @RequestBody AllocationRequestDto dto) {
         return ResponseEntity.ok(ApiResponse.success(activityService.allocate(id, dto)));
     }
 
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR') or (hasRole('MOTORISTA') and @activitySecurityService.isAssignedDriver(#id))")
     public ResponseEntity<ApiResponse<ActivityResponseDto>> transitionStatus(@PathVariable UUID id,
             @RequestBody StatusTransitionDto dto) {
         return ResponseEntity.ok(ApiResponse.success(activityService.transitionStatus(id, dto)));
     }
 
     @GetMapping("/{id}/events")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR') or (hasRole('MOTORISTA') and @activitySecurityService.isAssignedDriver(#id))")
     public ResponseEntity<ApiResponse<List<ActivityEventDto>>> events(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(activityService.getEvents(id)));
     }

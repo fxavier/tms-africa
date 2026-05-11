@@ -46,7 +46,7 @@ class VehicleServiceTest {
     @Test
     void createVehicleWithDuplicatePlateShouldThrowBusinessException() {
         VehicleCreateDto dto = new VehicleCreateDto("AA-00-BB", "Mercedes", "Sprinter", "FURGAO", 1000,
-                "Maputo", LocalDate.now(), null);
+                "Maputo", LocalDate.now(), null, null);
         when(vehicleRepository.existsByPlate("AA-00-BB")).thenReturn(true);
 
         assertThatThrownBy(() -> vehicleService.createVehicle(dto))

@@ -28,7 +28,7 @@ import pt.xavier.tms.shared.enums.AccessoryType;
 @Entity
 @Table(name = "vehicle_accessories")
 @EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Setter
 public class VehicleAccessory {
 

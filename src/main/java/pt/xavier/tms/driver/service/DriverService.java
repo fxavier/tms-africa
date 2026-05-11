@@ -13,6 +13,7 @@ import pt.xavier.tms.driver.dto.DriverResponseDto;
 import pt.xavier.tms.driver.dto.DriverUpdateDto;
 import pt.xavier.tms.driver.repository.DriverRepository;
 import pt.xavier.tms.hr.repository.EmployeeRepository;
+import pt.xavier.tms.integration.config.DriverAvailabilityConfig;
 import pt.xavier.tms.integration.dto.DriverAvailabilityDto;
 import pt.xavier.tms.integration.port.DriverAvailabilityPort;
 import pt.xavier.tms.shared.enums.AuditOperation;
@@ -27,6 +28,7 @@ public class DriverService {
     private final DriverRepository driverRepository;
     private final EmployeeRepository employeeRepository;
     private final DriverAvailabilityPort driverAvailabilityPort;
+    private final DriverAvailabilityConfig availabilityConfig;
 
     @Transactional
     @Auditable(entityType = "DRIVER", operation = AuditOperation.CRIACAO)
@@ -126,8 +128,13 @@ public class DriverService {
         }
         if (employee.getFunction() != null) {
             String code = employee.getFunction().getCode();
-            if (!("DRIVER".equalsIgnoreCase(code) || "MOTORISTA".equalsIgnoreCase(code))) {
-                throw new BusinessException("EMPLOYEE_FUNCTION_NOT_ALLOWED_FOR_DRIVER", "Employee function is not allowed for driver association");
+            var allowedCodes = availabilityConfig.allowedCodesOrDefault();
+            boolean allowed = allowedCodes.stream().anyMatch(allowedCode -> allowedCode.equalsIgnoreCase(code));
+            if (!allowed) {
+                throw new BusinessException(
+                        "EMPLOYEE_FUNCTION_NOT_ALLOWED_FOR_DRIVER",
+                        "Employee function code '%s' is not allowed for driver association. Allowed codes: %s"
+                                .formatted(code, allowedCodes));
             }
         }
     }

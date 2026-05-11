@@ -2,6 +2,7 @@ package pt.xavier.tms.vehicle.dto;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import pt.xavier.tms.shared.enums.VehicleStatus;
 
@@ -17,6 +18,7 @@ public record VehicleResponseDto(
         VehicleStatus status,
         UUID currentDriverId,
         String notes,
-        Instant createdAt
+        Instant createdAt,
+        List<VehicleAccessoryDto> accessories
 ) {
 }

@@ -21,6 +21,10 @@ public class UserService {
 
     @Transactional
     public UserResponseDto createUser(UserCreateDto dto) {
+        Set<String> currentRoles = keycloakUserGateway.getCurrentUserRoles();
+        if (currentRoles.contains("ADMIN") && dto.roles().contains("SUPERUSER")) {
+            throw new BusinessException("SUPERUSER_ROLE_FORBIDDEN", "ADMIN cannot assign SUPERUSER role");
+        }
         if (keycloakUserGateway.usernameExists(dto.username())) {
             throw new BusinessException("USERNAME_ALREADY_EXISTS", "Username already exists");
         }

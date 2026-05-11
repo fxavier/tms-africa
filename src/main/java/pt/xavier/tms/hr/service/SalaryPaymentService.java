@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.xavier.tms.hr.domain.Employee;
@@ -85,7 +86,7 @@ public class SalaryPaymentService {
 
     @Transactional(readOnly = true)
     public Page<EmployeePaymentStatusDto> getPaymentStatus(int year, int month, PaymentStatusFilter filter, Pageable pageable) {
-        Page<Employee> employees = employeeRepository.findAllByFilters(EmployeeStatus.ACTIVE, null, "", pageable);
+        Page<Employee> employees = employeeRepository.findAll(activeEmployees(), pageable);
         Set<UUID> paidIds = new HashSet<>(paymentRepository.findPaidEmployeeIdsByPeriod(year, month, SalaryPaymentStatus.PAID));
 
         java.util.List<EmployeePaymentStatusDto> content = employees.getContent().stream().map(emp -> {
@@ -124,5 +125,9 @@ public class SalaryPaymentService {
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException("INVALID_PAYMENT_AMOUNT", field + " must be greater than zero");
         }
+    }
+
+    private Specification<Employee> activeEmployees() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), EmployeeStatus.ACTIVE);
     }
 }

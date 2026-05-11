@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,11 +32,13 @@ public class SalaryPaymentController {
     private final SalaryPaymentService service;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<SalaryPaymentResponseDto>> create(@Valid @RequestBody SalaryPaymentCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(service.registerPayment(dto)));
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH','GESTOR_FROTA','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<SalaryPaymentResponseDto>>> list(
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) Integer month,
@@ -47,17 +50,20 @@ public class SalaryPaymentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH','GESTOR_FROTA','AUDITOR')")
     public ResponseEntity<ApiResponse<SalaryPaymentResponseDto>> getById(@PathVariable UUID id) {
         return ResponseEntity.ok(ApiResponse.success(service.getById(id)));
     }
 
     @PatchMapping("/{id}/cancel")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH')")
     public ResponseEntity<ApiResponse<SalaryPaymentResponseDto>> cancel(@PathVariable UUID id,
             @RequestBody CancelPaymentRequest request) {
         return ResponseEntity.ok(ApiResponse.success(service.cancelPayment(id, request.reason())));
     }
 
     @GetMapping("/status")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_RH','GESTOR_FROTA','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<EmployeePaymentStatusDto>>> paymentStatus(
             @RequestParam int year,
             @RequestParam int month,

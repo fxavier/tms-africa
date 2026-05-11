@@ -3,6 +3,7 @@ package pt.xavier.tms.hr.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import pt.xavier.tms.hr.domain.Employee;
 import pt.xavier.tms.hr.domain.SalaryPayment;
 import pt.xavier.tms.hr.dto.SalaryPaymentCreateDto;
@@ -90,7 +92,7 @@ class SalaryPaymentServiceTest {
         e2.setFullName("Two");
         e2.setStatus(EmployeeStatus.ACTIVE);
 
-        when(employeeRepository.findAllByFilters(EmployeeStatus.ACTIVE, null, "", PageRequest.of(0, 20)))
+        when(employeeRepository.findAll(any(Specification.class), eq(PageRequest.of(0, 20))))
                 .thenReturn(new PageImpl<>(List.of(e1, e2), PageRequest.of(0, 20), 2));
         when(paymentRepository.findPaidEmployeeIdsByPeriod(2026, 5, SalaryPaymentStatus.PAID))
                 .thenReturn(List.of(e1.getId()));

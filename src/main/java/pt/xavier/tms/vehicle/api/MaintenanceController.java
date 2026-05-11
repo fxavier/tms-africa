@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class MaintenanceController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<PagedResponse<MaintenanceRecordDto>>> list(
             @PathVariable("id") UUID vehicleId,
             @RequestParam(defaultValue = "0") int page,
@@ -42,6 +44,7 @@ public class MaintenanceController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
     public ResponseEntity<ApiResponse<MaintenanceRecordDto>> create(
             @PathVariable("id") UUID vehicleId,
             @RequestBody MaintenanceRecordDto dto) {
