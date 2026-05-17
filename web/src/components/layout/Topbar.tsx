@@ -1,29 +1,54 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, HelpCircle, LogOut, Search } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
-import { getStoredUser, logoutFromKeycloak } from "@/lib/auth";
+import { api } from "@/lib/api";
+import { getStoredUser, isAuthenticated, logoutFromKeycloak, setStoredUser } from "@/lib/auth";
+import type { UserResponseDto } from "@/lib/contracts";
+import { humanizeEnum } from "@/types/status";
 
-const context: Record<string, { placeholder: string; user: string; role: string }> = {
-  "/dashboard": { placeholder: "Pesquisar viaturas, motoristas ou rotas...", user: "João Silva", role: "Gestor de Frota" },
-  "/viaturas": { placeholder: "Pesquisar em Viaturas...", user: "João Oliveira", role: "Gestor de Frota" },
-  "/motoristas": { placeholder: "Procurar motoristas, documentos...", user: "Admin LogiTrack", role: "Gestor de Frota" },
-  "/atividades": { placeholder: "Pesquisar por atividade, viatura ou motorista...", user: "Admin LogiTrack", role: "Administrador" },
-  "/alertas": { placeholder: "Procurar alertas por viatura ou motorista...", user: "João Oliveira", role: "Gestor de Operações" },
-  "/auditoria": { placeholder: "Pesquisar em logs de auditoria...", user: "Admin Central", role: "Gestor de Sistema" },
-  "/utilizadores": { placeholder: "Pesquisar utilizadores, funções ou acessos...", user: "Carlos Mendes", role: "Administrador" },
-  "/recursos-humanos": { placeholder: "Pesquisar em Recursos Humanos...", user: "André Santos", role: "Gestor de RH" },
-  "/configuracoes": { placeholder: "Pesquisar configurações...", user: "Administrador", role: "admin@logitrack.pt" },
+const context: Record<string, { placeholder: string }> = {
+  "/dashboard": { placeholder: "Pesquisar viaturas, motoristas ou rotas..." },
+  "/viaturas": { placeholder: "Pesquisar em Viaturas..." },
+  "/motoristas": { placeholder: "Procurar motoristas, documentos..." },
+  "/atividades": { placeholder: "Pesquisar por atividade, viatura ou motorista..." },
+  "/alertas": { placeholder: "Procurar alertas por viatura ou motorista..." },
+  "/auditoria": { placeholder: "Pesquisar em logs de auditoria..." },
+  "/utilizadores": { placeholder: "Pesquisar utilizadores, funções ou acessos..." },
+  "/recursos-humanos": { placeholder: "Pesquisar em Recursos Humanos..." },
+  "/configuracoes": { placeholder: "Pesquisar configurações..." },
 };
 
 export function Topbar() {
   const pathname = usePathname();
   const key = Object.keys(context).find((item) => pathname.startsWith(item)) ?? "/dashboard";
   const settings = context[key];
-  const user = getStoredUser();
-  const displayName = user ? [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username : settings.user;
-  const displayRole = user?.roles?.[0] ?? settings.role;
+  const [user, setUser] = useState<UserResponseDto | null>(null);
+  const displayName = user ? [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username : "Utilizador";
+  const displayRole = user?.roles?.[0] ? humanizeEnum(user.roles[0]) : "Sessão ativa";
+
+  useEffect(() => {
+    const storedUser = getStoredUser();
+    if (storedUser) setUser(storedUser);
+    if (!isAuthenticated()) return;
+
+    let cancelled = false;
+    api.users.me()
+      .then((currentUser) => {
+        if (cancelled) return;
+        setStoredUser(currentUser);
+        setUser(currentUser);
+      })
+      .catch(() => {
+        if (!cancelled && !storedUser) setUser(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-20 flex h-[68px] items-center justify-between border-b border-slate-200 bg-white/95 px-6 backdrop-blur lg:ml-[260px]">

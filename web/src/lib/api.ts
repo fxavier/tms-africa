@@ -11,6 +11,10 @@ import type {
   ApiResponse,
   AuditLogResponseDto,
   AuditOperation,
+  CatalogCategory,
+  CatalogItemCreateDto,
+  CatalogItemDto,
+  CatalogItemUpdateDto,
   ChecklistInspectionDto,
   ChecklistTemplateDto,
   DriverAvailabilityDto,
@@ -48,6 +52,7 @@ export class ApiClientError extends Error {
     message: string,
     public readonly status: number,
     public readonly code?: string,
+    public readonly details: { field: string; message: string }[] = [],
   ) {
     super(message);
   }
@@ -97,10 +102,64 @@ async function request<T>(path: string, init: RequestInit = {}) {
   const payload = contentType.includes("application/json") ? ((await response.json()) as ApiResponse<T>) : null;
 
   if (!response.ok || payload?.error) {
-    throw new ApiClientError(payload?.error?.message ?? response.statusText, response.status, payload?.error?.code);
+    throw new ApiClientError(payload?.error?.message ?? response.statusText, response.status, payload?.error?.code, payload?.error?.details ?? []);
   }
 
   return payload?.data as T;
+}
+
+async function requestBlob(path: string, init: RequestInit = {}) {
+  const execute = async (token: string | null) => {
+    const headers = new Headers(init.headers);
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    return fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      headers,
+    });
+  };
+
+  let token = await ensureValidAccessToken();
+  if (!token) token = getAccessToken();
+  let response = await execute(token);
+
+  if (response.status === 401) {
+    const refreshedToken = await refreshAccessToken();
+    if (refreshedToken) {
+      response = await execute(refreshedToken);
+    } else {
+      clearSession();
+    }
+  }
+
+  if (!response.ok) {
+    const contentType = response.headers.get("content-type") ?? "";
+    const payload = contentType.includes("application/json") ? ((await response.json()) as ApiResponse<unknown>) : null;
+    throw new ApiClientError(payload?.error?.message ?? response.statusText, response.status, payload?.error?.code);
+  }
+
+  return {
+    blob: await response.blob(),
+    filename: filenameFromContentDisposition(response.headers.get("content-disposition")),
+  };
+}
+
+function filenameFromContentDisposition(header: string | null) {
+  if (!header) return null;
+  const utf8Match = header.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) return decodeURIComponent(utf8Match[1].replace(/^"|"$/g, ""));
+  const match = header.match(/filename="?([^";]+)"?/i);
+  return match?.[1] ?? null;
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
 }
 
 const json = (body?: unknown) => (body === undefined ? undefined : JSON.stringify(body));
@@ -125,10 +184,13 @@ export const api = {
     },
     maintenance: {
       list: (id: UUID, params?: PageParams) => request<PagedResponse<MaintenanceRecordDto>>(`/vehicles/${id}/maintenance${toQuery(params)}`),
+      get: (id: UUID, maintenanceId: UUID) => request<MaintenanceRecordDto>(`/vehicles/${id}/maintenance/${maintenanceId}`),
       create: (id: UUID, body: MaintenanceRecordDto) => request<MaintenanceRecordDto>(`/vehicles/${id}/maintenance`, { method: "POST", body: json(body) }),
+      update: (id: UUID, maintenanceId: UUID, body: MaintenanceRecordDto) => request<MaintenanceRecordDto>(`/vehicles/${id}/maintenance/${maintenanceId}`, { method: "PUT", body: json(body) }),
     },
     checklists: {
       list: (id: UUID, params?: PageParams) => request<PagedResponse<ChecklistInspectionDto>>(`/vehicles/${id}/checklists${toQuery(params)}`),
+      get: (id: UUID, checklistId: UUID) => request<ChecklistInspectionDto>(`/vehicles/${id}/checklists/${checklistId}`),
       submit: (id: UUID, body: ChecklistInspectionDto) => request<ChecklistInspectionDto>(`/vehicles/${id}/checklists`, { method: "POST", body: json(body) }),
     },
   },
@@ -173,6 +235,13 @@ export const api = {
     list: () => request<AlertConfigurationDto[]>("/alert-configurations"),
     update: (id: UUID, body: AlertConfigurationUpdateDto) => request<AlertConfigurationDto>(`/alert-configurations/${id}`, { method: "PUT", body: json(body) }),
   },
+  catalogItems: {
+    list: (category?: CatalogCategory) => request<CatalogItemDto[]>(`/catalog-items${toQuery({ category })}`),
+    create: (body: CatalogItemCreateDto) => request<CatalogItemDto>("/catalog-items", { method: "POST", body: json(body) }),
+    update: (id: UUID, body: CatalogItemUpdateDto) => request<CatalogItemDto>(`/catalog-items/${id}`, { method: "PUT", body: json(body) }),
+    activate: (id: UUID) => request<CatalogItemDto>(`/catalog-items/${id}/activate`, { method: "PATCH" }),
+    deactivate: (id: UUID) => request<CatalogItemDto>(`/catalog-items/${id}/deactivate`, { method: "PATCH" }),
+  },
   audit: {
     list: (params?: PageParams & { entityType?: string; entityId?: UUID; operation?: AuditOperation; performedBy?: string; from?: string; to?: string }) =>
       request<PagedResponse<AuditLogResponseDto>>(`/audit${toQuery(params)}`),
@@ -207,6 +276,7 @@ export const api = {
     },
   },
   users: {
+    list: () => request<UserResponseDto[]>("/users"),
     create: (body: UserCreateDto) => request<UserResponseDto>("/users", { method: "POST", body: json(body) }),
     disable: (id: string) => request<void>(`/users/${id}/disable`, { method: "PATCH" }),
     me: () => request<UserResponseDto>("/users/me"),
@@ -217,6 +287,11 @@ export const api = {
       formData.set("file", file);
       return request<FileUploadResultDto>("/files", { method: "POST", body: formData });
     },
+    download: async (id: string, fallbackFilename?: string) => {
+      const result = await requestBlob(`/files/${id}`);
+      downloadBlob(result.blob, result.filename ?? fallbackFilename ?? id);
+    },
+    downloadBlob: (id: string) => requestBlob(`/files/${id}`),
     downloadUrl: (id: string) => `${API_BASE_URL}/files/${id}`,
   },
 };

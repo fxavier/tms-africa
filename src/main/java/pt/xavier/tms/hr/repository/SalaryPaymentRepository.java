@@ -15,7 +15,9 @@ public interface SalaryPaymentRepository extends JpaRepository<SalaryPayment, UU
 
     Page<SalaryPayment> findByPeriodYearAndPeriodMonth(int year, int month, Pageable pageable);
 
-    boolean existsByEmployee_IdAndPeriodYearAndPeriodMonth(UUID employeeId, int year, int month);
+    List<SalaryPayment> findByPeriodYearAndPeriodMonthAndStatus(int year, int month, SalaryPaymentStatus status);
+
+    boolean existsByEmployee_IdAndPeriodYearAndPeriodMonthAndStatus(UUID employeeId, int year, int month, SalaryPaymentStatus status);
 
     @Query("""
             SELECT sp.employee.id FROM SalaryPayment sp

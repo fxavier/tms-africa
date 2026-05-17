@@ -69,14 +69,39 @@ public class MaintenanceService {
 
     @Transactional(readOnly = true)
     public MaintenanceRecordDto getMaintenance(UUID vehicleId, UUID maintenanceId) {
-        getVehicle(vehicleId);
-        MaintenanceRecord record = maintenanceRepository.findById(maintenanceId)
-                .orElseThrow(() -> new ResourceNotFoundException("MAINTENANCE_NOT_FOUND", "Maintenance record not found"));
-        return maintenanceMapper.toDto(record);
+        return maintenanceMapper.toDto(getMaintenanceRecord(vehicleId, maintenanceId));
+    }
+
+    @Transactional
+    @Auditable(entityType = "MAINTENANCE", operation = AuditOperation.ATUALIZACAO)
+    public MaintenanceRecordDto updateMaintenance(UUID vehicleId, UUID maintenanceId, MaintenanceRecordDto dto) {
+        MaintenanceRecord record = getMaintenanceRecord(vehicleId, maintenanceId);
+        record.setMaintenanceType(dto.maintenanceType());
+        record.setPerformedAt(dto.performedAt());
+        record.setMileageAtService(dto.mileageAtService());
+        record.setDescription(dto.description());
+        record.setSupplier(dto.supplier());
+        record.setTotalCost(dto.totalCost());
+        record.setPartsReplaced(dto.partsReplaced());
+        record.setNextMaintenanceDate(dto.nextMaintenanceDate());
+        record.setNextMaintenanceMileage(dto.nextMaintenanceMileage());
+        record.setResponsibleUser(dto.responsibleUser());
+
+        MaintenanceRecord saved = maintenanceRepository.save(record);
+        if (saved.getNextMaintenanceDate() != null) {
+            eventPublisher.publishEvent(new MaintenanceRegisteredEvent(saved.getVehicle().getId(), saved.getId(), saved.getNextMaintenanceDate()));
+        }
+        return maintenanceMapper.toDto(saved);
     }
 
     private Vehicle getVehicle(UUID vehicleId) {
         return vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("VEHICLE_NOT_FOUND", "Vehicle not found"));
+    }
+
+    private MaintenanceRecord getMaintenanceRecord(UUID vehicleId, UUID maintenanceId) {
+        getVehicle(vehicleId);
+        return maintenanceRepository.findByIdAndVehicle_Id(maintenanceId, vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("MAINTENANCE_NOT_FOUND", "Maintenance record not found for vehicle"));
     }
 }

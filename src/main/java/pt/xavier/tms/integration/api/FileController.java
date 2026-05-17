@@ -22,19 +22,18 @@ import pt.xavier.tms.shared.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('RH_INTEGRADOR')")
 public class FileController {
 
     private final FileStoragePort fileStoragePort;
 
     @PostMapping
-    @PreAuthorize("hasRole('RH_INTEGRADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','RH_INTEGRADOR')")
     public ResponseEntity<ApiResponse<FileUploadResultDto>> upload(@RequestParam("file") MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(fileStoragePort.upload(file)));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('RH_INTEGRADOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR','RH_INTEGRADOR')")
     public ResponseEntity<Resource> download(@PathVariable("id") String storageKey) {
         Resource resource = fileStoragePort.download(storageKey);
         return ResponseEntity.ok()

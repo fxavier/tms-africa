@@ -2,6 +2,7 @@
   "/login/page": "app/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/auth/callback/page": "app/auth/callback/page.js",
-  "/viaturas/nova/page": "app/viaturas/nova/page.js",
-  "/viaturas/page": "app/viaturas/page.js"
+  "/viaturas/page": "app/viaturas/page.js",
+  "/utilizadores/page": "app/utilizadores/page.js",
+  "/manutencoes/page": "app/manutencoes/page.js"
 }

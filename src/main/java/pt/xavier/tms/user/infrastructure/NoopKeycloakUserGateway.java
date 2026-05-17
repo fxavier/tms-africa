@@ -1,8 +1,11 @@
 package pt.xavier.tms.user.infrastructure;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import pt.xavier.tms.user.dto.UserCreateDto;
@@ -14,36 +17,58 @@ import pt.xavier.tms.user.port.KeycloakUserGateway;
 @Profile({"dev", "test", "default"})
 public class NoopKeycloakUserGateway implements KeycloakUserGateway {
 
+    private final CopyOnWriteArrayList<UserResponseDto> users = new CopyOnWriteArrayList<>();
+
     @Override
     public boolean usernameExists(String username) {
-        return false;
+        return listUsers().stream().anyMatch(user -> user.username().equalsIgnoreCase(username));
     }
 
     @Override
     public boolean emailExists(String email) {
-        return false;
+        return listUsers().stream().anyMatch(user -> user.email().equalsIgnoreCase(email));
     }
 
     @Override
     public UserResponseDto createUser(UserCreateDto dto) {
-        return new UserResponseDto("system-id", dto.username(), dto.email(), dto.firstName(), dto.lastName(), dto.roles(),
+        UserResponseDto user = new UserResponseDto(UUID.randomUUID().toString(), dto.username(), dto.email(),
+                dto.firstName(), dto.lastName(), dto.roles(),
                 dto.enabled(), Instant.now());
+        users.add(user);
+        return user;
     }
 
     @Override
     public UserResponseDto updateUser(String userId, UserUpdateDto dto) {
-        return new UserResponseDto(userId, "updated-user", dto.email(), dto.firstName(), dto.lastName(), dto.roles(),
+        UserResponseDto updated = new UserResponseDto(userId, "updated-user", dto.email(), dto.firstName(), dto.lastName(), dto.roles(),
                 dto.enabled(), Instant.now());
+        users.replaceAll(user -> user.id().equals(userId) ? updated : user);
+        return updated;
     }
 
     @Override
     public UserResponseDto getUser(String userId) {
-        return new UserResponseDto(userId, "system", "system@example.com", "System", "User", Set.of("ADMIN"), true,
-                Instant.now());
+        return listUsers().stream()
+                .filter(user -> user.id().equals(userId))
+                .findFirst()
+                .orElseGet(() -> new UserResponseDto(userId, "system", "system@example.com", "System", "User",
+                        Set.of("ADMIN"), true, Instant.now()));
+    }
+
+    @Override
+    public List<UserResponseDto> listUsers() {
+        List<UserResponseDto> result = new ArrayList<>();
+        result.add(getCurrentUserProfile());
+        result.addAll(users);
+        return result;
     }
 
     @Override
     public void setUserEnabled(String userId, boolean enabled) {
+        users.replaceAll(user -> user.id().equals(userId)
+                ? new UserResponseDto(user.id(), user.username(), user.email(), user.firstName(), user.lastName(),
+                        user.roles(), enabled, user.createdAt())
+                : user);
     }
 
     @Override

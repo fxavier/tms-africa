@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { BarChart3, DoorOpen, Info, Lock, Truck } from "lucide-react";
+import { BarChart3, DoorOpen, Lock, Truck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/tms/Logo";
-import { isAuthenticated, loginWithKeycloak } from "@/lib/auth";
+import { isAuthenticated, loginWithKeycloak, registerWithKeycloak } from "@/lib/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,45 +27,23 @@ export default function LoginPage() {
             Controlo operacional, conformidade documental e rastreabilidade numa única plataforma.
           </p>
 
-          <form
-            className="mt-14 space-y-5"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void loginWithKeycloak();
-            }}
-          >
-            <label className="block text-sm font-semibold text-slate-900">
-              Utilizador
-              <Input className="mt-2 h-14 text-base" placeholder="ex: manuel.silva@logitrack.pt" />
-            </label>
-            <label className="block text-sm font-semibold text-slate-900">
-              <span className="flex items-center justify-between">
-                Palavra-passe
-                <Link href="#" className="text-sm font-semibold text-blue-600">Esqueci-me da password</Link>
-              </span>
-              <Input className="mt-2 h-14 text-base" type="password" placeholder="********" />
-            </label>
-            <Button type="submit" className="h-14 w-full text-base">
-              <DoorOpen className="h-5 w-5" /> Iniciar sessão
-            </Button>
-          </form>
-
-          <p className="mt-5 text-sm text-slate-600">
-            Ainda não tem conta?{" "}
-            <Link href="/register" className="font-semibold text-blue-600">
-              Criar conta
-            </Link>
-          </p>
-
-          <div className="my-10 flex items-center gap-4">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-sm font-bold uppercase tracking-[0.25em] text-slate-500">Ou aceda via SSO</span>
-            <div className="h-px flex-1 bg-slate-200" />
+          <div className="mt-14 rounded-2xl border border-slate-200 bg-slate-50 p-6">
+            <h2 className="text-lg font-bold text-slate-950">Autenticação centralizada</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              O acesso ao TMS é realizado exclusivamente pelo Keycloak usando Authorization Code + PKCE. Clique abaixo para abrir o formulário oficial de login.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <Button className="h-12 text-base" onClick={() => void loginWithKeycloak()}>
+                <DoorOpen className="h-5 w-5" /> Iniciar sessão
+              </Button>
+              <Button variant="outline" className="h-12 text-base" onClick={() => void registerWithKeycloak()}>
+                <UserPlus className="h-5 w-5" /> Criar conta
+              </Button>
+            </div>
+            <p className="mt-4 text-xs text-slate-500">
+              Esqueceu a password? Use o link "Forgot password" no ecrã do Keycloak.
+            </p>
           </div>
-
-          <Button variant="outline" className="h-14 w-full text-base" onClick={() => void loginWithKeycloak()}>
-            <Info className="h-5 w-5" /> Iniciar sessão com Keycloak
-          </Button>
         </div>
 
         <footer className="mt-auto flex gap-10 pt-12 text-sm font-medium text-slate-500">

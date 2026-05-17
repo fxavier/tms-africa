@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Download, Filter, MapPin, MoreVertical, Plus, ShieldCheck, Truck, Wrench, XCircle } from "lucide-react";
+import { Download, Eye, Filter, MapPin, Pencil, Plus, ShieldCheck, Truck, Wrench, XCircle } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ErrorState, LoadingState } from "@/components/tms/ApiFeedback";
 import { PageHeader } from "@/components/tms/PageHeader";
@@ -60,7 +60,7 @@ export default function VehiclesPage() {
               <TableHead>Capacidade</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Local</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,7 +72,16 @@ export default function VehiclesPage() {
                 <TableCell>{vehicle.capacity} kg</TableCell>
                 <TableCell><StatusBadge variant={statusVariant(vehicle.status)}>{humanizeEnum(vehicle.status)}</StatusBadge></TableCell>
                 <TableCell><span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-blue-600" /> {vehicle.activityLocation}</span></TableCell>
-                <TableCell><MoreVertical className="h-5 w-5 text-slate-500" /></TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    <Button asChild variant="ghost" size="icon" aria-label={`Ver detalhes da viatura ${vehicle.plate}`}>
+                      <Link href={`/viaturas/detalhe?id=${vehicle.id}`}><Eye className="h-4 w-4" /></Link>
+                    </Button>
+                    <Button asChild variant="ghost" size="icon" aria-label={`Editar viatura ${vehicle.plate}`}>
+                      <Link href={`/viaturas/editar?id=${vehicle.id}`}><Pencil className="h-4 w-4" /></Link>
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

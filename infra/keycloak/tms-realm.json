@@ -32,8 +32,11 @@
       "frontchannelLogout": true,
       "redirectUris": [
         "http://localhost:3000/auth/callback",
+        "http://localhost:3000/login",
         "http://localhost:3001/auth/callback",
-        "http://localhost:*/auth/callback"
+        "http://localhost:3001/login",
+        "http://localhost:*/auth/callback",
+        "http://localhost:*/login"
       ],
       "webOrigins": [
         "http://localhost:3000",
@@ -41,7 +44,8 @@
         "http://localhost:*"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3000/login##http://localhost:3001/login##http://localhost:*/login"
       },
       "defaultClientScopes": [
         "web-origins",

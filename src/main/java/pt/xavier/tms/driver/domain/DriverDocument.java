@@ -24,7 +24,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 import pt.xavier.tms.vehicle.domain.FileRecord;
 
 @Getter
@@ -43,9 +42,8 @@ public class DriverDocument {
     @JoinColumn(name = "driver_id", nullable = false)
     private Driver driver;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "document_type", nullable = false, length = 30)
-    private DriverDocumentType documentType;
+    @Column(name = "document_type", nullable = false, length = 80)
+    private String documentType;
 
     @Column(name = "document_number", length = 100)
     private String documentNumber;

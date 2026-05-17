@@ -28,7 +28,6 @@ import pt.xavier.tms.integration.dto.DriverAvailabilityDto;
 import pt.xavier.tms.integration.exception.RhIntegrationException;
 import pt.xavier.tms.integration.port.DriverAvailabilityPort;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 import pt.xavier.tms.shared.enums.DriverStatus;
 import pt.xavier.tms.shared.enums.VehicleStatus;
 import pt.xavier.tms.vehicle.domain.ChecklistInspection;
@@ -79,7 +78,7 @@ class AllocationValidationServiceTest {
 
         when(vehicleDocumentRepository.findByVehicleIdAndStatus(vehicleId, DocumentStatus.EXPIRADO)).thenReturn(List.of());
         when(checklistInspectionRepository.findTopByVehicleIdOrderByPerformedAtDesc(vehicleId)).thenReturn(Optional.empty());
-        when(driverDocumentRepository.findByDriverIdAndDocumentType(driverId, DriverDocumentType.CARTA_CONDUCAO)).thenReturn(List.of());
+        when(driverDocumentRepository.findByDriverIdAndDocumentType(driverId, "CARTA_CONDUCAO")).thenReturn(List.of());
         when(driverAvailabilityPort.checkAvailability(any(), any(), any()))
                 .thenReturn(new DriverAvailabilityDto(driverId, true, "AVAILABLE", List.of()));
         when(activityRepository.findConflictingActivitiesForVehicle(any(), any(), any(), any())).thenReturn(List.of());
@@ -160,7 +159,7 @@ class AllocationValidationServiceTest {
         DriverDocument doc = new DriverDocument();
         doc.setId(UUID.randomUUID());
         doc.setStatus(DocumentStatus.EXPIRADO);
-        when(driverDocumentRepository.findByDriverIdAndDocumentType(driverId, DriverDocumentType.CARTA_CONDUCAO))
+        when(driverDocumentRepository.findByDriverIdAndDocumentType(driverId, "CARTA_CONDUCAO"))
                 .thenReturn(List.of(doc));
 
         AllocationResultDto result = service.validate(activityId, vehicleId, driverId, start, end, null);

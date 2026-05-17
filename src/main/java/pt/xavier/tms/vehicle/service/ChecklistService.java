@@ -85,6 +85,13 @@ public class ChecklistService {
     }
 
     @Transactional(readOnly = true)
+    public ChecklistInspectionDto getChecklist(UUID vehicleId, UUID checklistId) {
+        getVehicle(vehicleId);
+        return checklistMapper.toInspectionDto(checklistInspectionRepository.findByIdAndVehicle_Id(checklistId, vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("CHECKLIST_NOT_FOUND", "Checklist inspection not found for vehicle")));
+    }
+
+    @Transactional(readOnly = true)
     public List<ChecklistTemplateDto> listTemplates(String vehicleType) {
         if (vehicleType == null || vehicleType.isBlank()) {
             return checklistTemplateRepository.findAll().stream().map(checklistMapper::toTemplateDto).toList();
@@ -106,16 +113,7 @@ public class ChecklistService {
         template.setName(dto.name());
         template.setActive(dto.active());
 
-        List<ChecklistTemplateItem> items = dto.items() == null ? List.of() : dto.items().stream().map(i -> {
-            ChecklistTemplateItem item = new ChecklistTemplateItem();
-            item.setId(UUID.randomUUID());
-            item.setTemplate(template);
-            item.setItemName(i.itemName());
-            item.setCritical(i.critical());
-            item.setDisplayOrder(i.displayOrder());
-            return item;
-        }).toList();
-        template.setItems(items);
+        template.setItems(toTemplateItems(template, dto));
 
         return checklistMapper.toTemplateDto(checklistTemplateRepository.save(template));
     }
@@ -127,7 +125,21 @@ public class ChecklistService {
         template.setVehicleType(dto.vehicleType());
         template.setName(dto.name());
         template.setActive(dto.active());
+        template.getItems().clear();
+        template.getItems().addAll(toTemplateItems(template, dto));
         return checklistMapper.toTemplateDto(checklistTemplateRepository.save(template));
+    }
+
+    private List<ChecklistTemplateItem> toTemplateItems(ChecklistTemplate template, ChecklistTemplateDto dto) {
+        return dto.items() == null ? List.of() : dto.items().stream().map(i -> {
+            ChecklistTemplateItem item = new ChecklistTemplateItem();
+            item.setId(UUID.randomUUID());
+            item.setTemplate(template);
+            item.setItemName(i.itemName());
+            item.setCritical(i.critical());
+            item.setDisplayOrder(i.displayOrder());
+            return item;
+        }).toList();
     }
 
     private Vehicle getVehicle(UUID vehicleId) {

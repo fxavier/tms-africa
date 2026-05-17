@@ -53,6 +53,14 @@ public class ChecklistController {
                 .body(ApiResponse.success(checklistService.submitChecklist(vehicleId, dto)));
     }
 
+    @GetMapping("/api/v1/vehicles/{id}/checklists/{checklistId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
+    public ResponseEntity<ApiResponse<ChecklistInspectionDto>> getChecklist(
+            @PathVariable("id") UUID vehicleId,
+            @PathVariable("checklistId") UUID checklistId) {
+        return ResponseEntity.ok(ApiResponse.success(checklistService.getChecklist(vehicleId, checklistId)));
+    }
+
     @GetMapping("/api/v1/checklist-templates")
     @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
     public ResponseEntity<ApiResponse<List<ChecklistTemplateDto>>> listTemplates(

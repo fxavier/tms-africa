@@ -21,7 +21,7 @@ export default function RegisterPage() {
         <Logo />
         <h1 className="mt-8 text-3xl font-black text-slate-950">Criar conta</h1>
         <p className="mt-3 text-slate-600">
-          O registo é realizado pelo Keycloak (Authorization Code + PKCE) para manter a gestão de identidade centralizada.
+          O registo é realizado no formulário oficial do Keycloak (Authorization Code + PKCE) para manter a gestão de identidade centralizada.
         </p>
 
         <Button className="mt-8 h-12 w-full" onClick={() => void registerWithKeycloak()}>

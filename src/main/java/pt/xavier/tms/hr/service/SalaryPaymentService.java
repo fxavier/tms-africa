@@ -2,8 +2,10 @@ package pt.xavier.tms.hr.service;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -40,7 +42,7 @@ public class SalaryPaymentService {
         if (employee.getStatus() != EmployeeStatus.ACTIVE) {
             throw new BusinessException("EMPLOYEE_INACTIVE", "Employee must be ACTIVE to receive payment");
         }
-        if (paymentRepository.existsByEmployee_IdAndPeriodYearAndPeriodMonth(dto.employeeId(), dto.periodYear(), dto.periodMonth())) {
+        if (paymentRepository.existsByEmployee_IdAndPeriodYearAndPeriodMonthAndStatus(dto.employeeId(), dto.periodYear(), dto.periodMonth(), SalaryPaymentStatus.PAID)) {
             throw new BusinessException("SALARY_PAYMENT_DUPLICATE_PERIOD", "Payment for this period already exists");
         }
         validatePositive(dto.paidAmount(), "paidAmount");
@@ -87,10 +89,14 @@ public class SalaryPaymentService {
     @Transactional(readOnly = true)
     public Page<EmployeePaymentStatusDto> getPaymentStatus(int year, int month, PaymentStatusFilter filter, Pageable pageable) {
         Page<Employee> employees = employeeRepository.findAll(activeEmployees(), pageable);
-        Set<UUID> paidIds = new HashSet<>(paymentRepository.findPaidEmployeeIdsByPeriod(year, month, SalaryPaymentStatus.PAID));
+        Map<UUID, SalaryPayment> paidPayments = paymentRepository.findByPeriodYearAndPeriodMonthAndStatus(year, month, SalaryPaymentStatus.PAID)
+                .stream()
+                .collect(java.util.stream.Collectors.toMap(payment -> payment.getEmployee().getId(), Function.identity()));
+        Set<UUID> paidIds = new HashSet<>(paidPayments.keySet());
 
         java.util.List<EmployeePaymentStatusDto> content = employees.getContent().stream().map(emp -> {
             boolean paid = paidIds.contains(emp.getId());
+            SalaryPayment payment = paidPayments.get(emp.getId());
             String status = paid ? "PAID" : "UNPAID";
             if (filter == PaymentStatusFilter.PAID && !paid) {
                 return null;
@@ -106,9 +112,9 @@ public class SalaryPaymentService {
                     year,
                     month,
                     status,
-                    null,
-                    null,
-                    null
+                    payment == null ? null : payment.getPaidAmount(),
+                    payment == null ? null : payment.getPaymentDate(),
+                    payment == null ? null : payment.getReference()
             );
         }).filter(java.util.Objects::nonNull).toList();
 

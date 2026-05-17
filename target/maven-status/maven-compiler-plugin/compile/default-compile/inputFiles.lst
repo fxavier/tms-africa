@@ -39,6 +39,14 @@
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/package-info.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/repository/AuditLogRepository.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/audit/service/AuditService.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/api/CatalogItemController.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/domain/CatalogCategory.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/domain/CatalogItem.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/dto/CatalogItemCreateDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/dto/CatalogItemDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/dto/CatalogItemUpdateDto.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/repository/CatalogItemRepository.java
+/Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/catalog/service/CatalogService.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/driver/api/DriverController.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/driver/api/DriverDocumentController.java
 /Users/xavier/dev/code/Spring-modulith/tms-africa/src/main/java/pt/xavier/tms/driver/domain/Driver.java

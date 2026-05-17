@@ -22,6 +22,8 @@ import pt.xavier.tms.activity.dto.StatusTransitionDto;
 import pt.xavier.tms.activity.repository.ActivityEventRepository;
 import pt.xavier.tms.activity.repository.ActivityRepository;
 import pt.xavier.tms.audit.annotation.Auditable;
+import pt.xavier.tms.catalog.domain.CatalogCategory;
+import pt.xavier.tms.catalog.service.CatalogService;
 import pt.xavier.tms.driver.repository.DriverRepository;
 import pt.xavier.tms.security.SecurityUtils;
 import pt.xavier.tms.shared.enums.ActivityPriority;
@@ -44,10 +46,12 @@ public class ActivityService {
     private final VehicleRepository vehicleRepository;
     private final DriverRepository driverRepository;
     private final ChecklistInspectionRepository checklistInspectionRepository;
+    private final CatalogService catalogService;
 
     @Transactional
     @Auditable(entityType = "ACTIVITY", operation = AuditOperation.CRIACAO)
     public ActivityResponseDto createActivity(ActivityCreateDto dto) {
+        catalogService.requireActiveCode(CatalogCategory.ACTIVITY_TYPE, dto.activityType());
         Activity activity = new Activity();
         activity.setId(UUID.randomUUID());
         activity.setCode(activityCodeGenerator.generateActivityCode());
@@ -68,7 +72,10 @@ public class ActivityService {
     public ActivityResponseDto updateActivity(UUID activityId, ActivityUpdateDto dto) {
         Activity activity = getEntity(activityId);
         if (dto.title() != null) activity.setTitle(dto.title());
-        if (dto.activityType() != null) activity.setActivityType(dto.activityType());
+        if (dto.activityType() != null) {
+            catalogService.requireActiveCode(CatalogCategory.ACTIVITY_TYPE, dto.activityType());
+            activity.setActivityType(dto.activityType());
+        }
         if (dto.location() != null) activity.setLocation(dto.location());
         if (dto.plannedStart() != null) activity.setPlannedStart(dto.plannedStart());
         if (dto.plannedEnd() != null) activity.setPlannedEnd(dto.plannedEnd());

@@ -18,6 +18,8 @@ public interface KeycloakUserGateway {
 
     UserResponseDto getUser(String userId);
 
+    List<UserResponseDto> listUsers();
+
     void setUserEnabled(String userId, boolean enabled);
 
     void logout(String userId);

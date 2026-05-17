@@ -3,11 +3,10 @@ package pt.xavier.tms.driver.dto;
 import java.time.LocalDate;
 import java.util.UUID;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 
 public record DriverDocumentDto(
         UUID id,
-        DriverDocumentType documentType,
+        String documentType,
         String documentNumber,
         LocalDate issueDate,
         LocalDate expiryDate,

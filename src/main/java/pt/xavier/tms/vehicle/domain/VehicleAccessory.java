@@ -22,7 +22,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pt.xavier.tms.shared.enums.AccessoryStatus;
-import pt.xavier.tms.shared.enums.AccessoryType;
 
 @Getter
 @Entity
@@ -39,9 +38,8 @@ public class VehicleAccessory {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "accessory_type", nullable = false, length = 50)
-    private AccessoryType accessoryType;
+    @Column(name = "accessory_type", nullable = false, length = 80)
+    private String accessoryType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.xavier.tms.audit.annotation.Auditable;
+import pt.xavier.tms.catalog.domain.CatalogCategory;
+import pt.xavier.tms.catalog.service.CatalogService;
 import pt.xavier.tms.shared.enums.AuditOperation;
 import pt.xavier.tms.shared.enums.AccessoryStatus;
 import pt.xavier.tms.shared.enums.VehicleStatus;
@@ -45,6 +47,7 @@ public class VehicleService {
     private final VehicleDocumentMapper vehicleDocumentMapper;
     private final MaintenanceMapper maintenanceMapper;
     private final ChecklistMapper checklistMapper;
+    private final CatalogService catalogService;
 
     public VehicleService(
             VehicleRepository vehicleRepository,
@@ -55,7 +58,8 @@ public class VehicleService {
             VehicleMapper vehicleMapper,
             VehicleDocumentMapper vehicleDocumentMapper,
             MaintenanceMapper maintenanceMapper,
-            ChecklistMapper checklistMapper) {
+            ChecklistMapper checklistMapper,
+            CatalogService catalogService) {
         this.vehicleRepository = vehicleRepository;
         this.vehicleDocumentRepository = vehicleDocumentRepository;
         this.vehicleAccessoryRepository = vehicleAccessoryRepository;
@@ -65,6 +69,7 @@ public class VehicleService {
         this.vehicleDocumentMapper = vehicleDocumentMapper;
         this.maintenanceMapper = maintenanceMapper;
         this.checklistMapper = checklistMapper;
+        this.catalogService = catalogService;
     }
 
     @Transactional
@@ -88,6 +93,7 @@ public class VehicleService {
                 throw new BusinessException("DUPLICATED_ACCESSORY_TYPE", "Accessories list contains duplicated types");
             }
             var accessories = dto.accessories().stream().map(item -> {
+                catalogService.requireActiveCode(CatalogCategory.ACCESSORY, item.accessoryType());
                 VehicleAccessory accessory = new VehicleAccessory();
                 accessory.setId(UUID.randomUUID());
                 accessory.setVehicle(savedVehicle);

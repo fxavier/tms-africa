@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,5 +51,22 @@ public class MaintenanceController {
             @RequestBody MaintenanceRecordDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(maintenanceService.registerMaintenance(vehicleId, dto)));
+    }
+
+    @GetMapping("/{maintenanceId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA','OPERADOR','AUDITOR')")
+    public ResponseEntity<ApiResponse<MaintenanceRecordDto>> get(
+            @PathVariable("id") UUID vehicleId,
+            @PathVariable("maintenanceId") UUID maintenanceId) {
+        return ResponseEntity.ok(ApiResponse.success(maintenanceService.getMaintenance(vehicleId, maintenanceId)));
+    }
+
+    @PutMapping("/{maintenanceId}")
+    @PreAuthorize("hasAnyRole('ADMIN','GESTOR_FROTA')")
+    public ResponseEntity<ApiResponse<MaintenanceRecordDto>> update(
+            @PathVariable("id") UUID vehicleId,
+            @PathVariable("maintenanceId") UUID maintenanceId,
+            @RequestBody MaintenanceRecordDto dto) {
+        return ResponseEntity.ok(ApiResponse.success(maintenanceService.updateMaintenance(vehicleId, maintenanceId, dto)));
     }
 }

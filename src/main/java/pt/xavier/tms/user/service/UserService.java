@@ -64,4 +64,9 @@ public class UserService {
     public UserResponseDto getMe() {
         return keycloakUserGateway.getCurrentUserProfile();
     }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDto> listUsers() {
+        return keycloakUserGateway.listUsers();
+    }
 }

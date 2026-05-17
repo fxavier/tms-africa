@@ -7,13 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.xavier.tms.audit.annotation.Auditable;
+import pt.xavier.tms.catalog.domain.CatalogCategory;
+import pt.xavier.tms.catalog.service.CatalogService;
 import pt.xavier.tms.driver.domain.Driver;
 import pt.xavier.tms.driver.domain.DriverDocument;
 import pt.xavier.tms.driver.dto.DriverDocumentDto;
 import pt.xavier.tms.driver.repository.DriverDocumentRepository;
 import pt.xavier.tms.shared.enums.AuditOperation;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 import pt.xavier.tms.shared.exception.ResourceNotFoundException;
 import pt.xavier.tms.vehicle.repository.FileRecordRepository;
 
@@ -21,9 +22,12 @@ import pt.xavier.tms.vehicle.repository.FileRecordRepository;
 @RequiredArgsConstructor
 public class DriverDocumentService {
 
+    private static final String DRIVER_LICENSE_DOCUMENT_TYPE = "CARTA_CONDUCAO";
+
     private final DriverService driverService;
     private final DriverDocumentRepository repository;
     private final FileRecordRepository fileRecordRepository;
+    private final CatalogService catalogService;
 
     @Transactional
     @Auditable(entityType = "DRIVER_DOCUMENT", operation = AuditOperation.CRIACAO)
@@ -52,7 +56,7 @@ public class DriverDocumentService {
         List<DriverDocument> documents = repository.findByDriver_Id(driverId);
         LocalDate today = LocalDate.now();
         documents.forEach(doc -> {
-            if (doc.getDocumentType() == DriverDocumentType.CARTA_CONDUCAO
+            if (DRIVER_LICENSE_DOCUMENT_TYPE.equals(doc.getDocumentType())
                     && doc.getExpiryDate() != null
                     && doc.getExpiryDate().isBefore(today)
                     && doc.getStatus() != DocumentStatus.EXPIRADO) {
@@ -64,13 +68,14 @@ public class DriverDocumentService {
     }
 
     private void apply(DriverDocument document, DriverDocumentDto dto) {
+        catalogService.requireActiveCode(CatalogCategory.DRIVER_DOCUMENT, dto.documentType());
         document.setDocumentType(dto.documentType());
         document.setDocumentNumber(dto.documentNumber());
         document.setIssueDate(dto.issueDate());
         document.setExpiryDate(dto.expiryDate());
         document.setIssuingEntity(dto.issuingEntity());
         document.setCategory(dto.category());
-        document.setStatus(dto.status());
+        document.setStatus(dto.status() == null ? DocumentStatus.VALIDO : dto.status());
         document.setNotes(dto.notes());
         if (dto.fileId() != null) {
             document.setFile(fileRecordRepository.findById(dto.fileId())

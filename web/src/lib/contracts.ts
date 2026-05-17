@@ -43,12 +43,40 @@ export type SalaryPaymentStatus = "PAID" | "CANCELLED";
 export type PaymentMethod = "BANK_TRANSFER" | "CASH" | "MOBILE_MONEY" | "OTHER";
 export type PaymentStatusFilter = "PAID" | "UNPAID" | "ALL";
 export type DocumentStatus = "VALIDO" | "EXPIRADO" | "PENDENTE_RENOVACAO" | "CANCELADO";
-export type VehicleDocumentType = "LIVRETE" | "INSPECAO_PERIODICA" | "SEGURO" | "LICENCA_CIRCULACAO" | "MANIFESTO_CARGA" | "TAXA_RADIO";
-export type DriverDocumentType = "CARTA_CONDUCAO" | "BILHETE_IDENTIDADE" | "OUTRO";
+export type CatalogCategory = "VEHICLE_DOCUMENT" | "DRIVER_DOCUMENT" | "ACCESSORY" | "ACTIVITY_TYPE";
+export type VehicleDocumentType = string;
+export type DriverDocumentType = string;
 export type MaintenanceType = "PREVENTIVA" | "CORRETIVA";
 export type ChecklistItemStatus = "OK" | "AVARIA" | "FALTA";
 export type AccessoryStatus = "PRESENTE" | "AUSENTE" | "DANIFICADO";
-export type AccessoryType = "MACACO" | "RODA_SOBRESSALENTE" | "TRIANGULO" | "EXTINTOR" | "KIT_PRIMEIROS_SOCORROS" | "COLETE_REFLETOR";
+export type AccessoryType = string;
+
+export interface CatalogItemDto {
+  id: UUID;
+  category: CatalogCategory;
+  code: string;
+  name: string;
+  description?: string;
+  active: boolean;
+  systemDefault: boolean;
+  sortOrder: number;
+}
+
+export interface CatalogItemCreateDto {
+  category: CatalogCategory;
+  code: string;
+  name: string;
+  description?: string;
+  active?: boolean;
+  sortOrder?: number;
+}
+
+export interface CatalogItemUpdateDto {
+  name: string;
+  description?: string;
+  active?: boolean;
+  sortOrder?: number;
+}
 
 export interface VehicleAccessoryCreateDto {
   accessoryType: AccessoryType;

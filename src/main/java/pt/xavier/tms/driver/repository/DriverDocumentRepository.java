@@ -6,15 +6,14 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import pt.xavier.tms.driver.domain.DriverDocument;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 
 public interface DriverDocumentRepository extends JpaRepository<DriverDocument, UUID> {
 
     List<DriverDocument> findByDriver_Id(UUID driverId);
 
-    List<DriverDocument> findByDriver_IdAndDocumentType(UUID driverId, DriverDocumentType type);
+    List<DriverDocument> findByDriver_IdAndDocumentType(UUID driverId, String type);
 
-    List<DriverDocument> findByDriverIdAndDocumentType(UUID driverId, DriverDocumentType type);
+    List<DriverDocument> findByDriverIdAndDocumentType(UUID driverId, String type);
 
     List<DriverDocument> findByExpiryDateBetweenAndStatusNot(LocalDate from, LocalDate to, DocumentStatus status);
 

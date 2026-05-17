@@ -1,11 +1,11 @@
 package pt.xavier.tms.vehicle.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import pt.xavier.tms.shared.enums.AccessoryStatus;
-import pt.xavier.tms.shared.enums.AccessoryType;
 
 public record VehicleAccessoryCreateDto(
-        @NotNull AccessoryType accessoryType,
+        @NotNull @Size(max = 80) String accessoryType,
         AccessoryStatus status,
         String notes
 ) {

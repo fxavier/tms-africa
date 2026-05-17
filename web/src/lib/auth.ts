@@ -1,6 +1,7 @@
 import type { UserResponseDto } from "@/lib/contracts";
 
 const ACCESS_TOKEN_KEY = "tms.access_token";
+const ID_TOKEN_KEY = "tms.id_token";
 const REFRESH_TOKEN_KEY = "tms.refresh_token";
 const EXPIRES_AT_KEY = "tms.expires_at";
 const PKCE_VERIFIER_KEY = "tms.pkce_verifier";
@@ -60,6 +61,11 @@ export function getAccessToken() {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+export function getIdToken() {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(ID_TOKEN_KEY);
+}
+
 export function getRefreshToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(REFRESH_TOKEN_KEY);
@@ -110,8 +116,9 @@ export async function refreshAccessToken() {
       return null;
     }
 
-    const tokenSet = (await response.json()) as { access_token: string; refresh_token?: string; expires_in: number };
+    const tokenSet = (await response.json()) as { access_token: string; id_token?: string; refresh_token?: string; expires_in: number };
     localStorage.setItem(ACCESS_TOKEN_KEY, tokenSet.access_token);
+    if (tokenSet.id_token) localStorage.setItem(ID_TOKEN_KEY, tokenSet.id_token);
     if (tokenSet.refresh_token) localStorage.setItem(REFRESH_TOKEN_KEY, tokenSet.refresh_token);
     localStorage.setItem(EXPIRES_AT_KEY, String(Date.now() + tokenSet.expires_in * 1000));
     return tokenSet.access_token;
@@ -213,8 +220,9 @@ export async function completeKeycloakLogin(code: string, state: string | null) 
     throw new Error("Falha ao trocar o codigo OAuth por tokens.");
   }
 
-  const tokenSet = (await response.json()) as { access_token: string; refresh_token?: string; expires_in: number };
+  const tokenSet = (await response.json()) as { access_token: string; id_token?: string; refresh_token?: string; expires_in: number };
   localStorage.setItem(ACCESS_TOKEN_KEY, tokenSet.access_token);
+  if (tokenSet.id_token) localStorage.setItem(ID_TOKEN_KEY, tokenSet.id_token);
   if (tokenSet.refresh_token) localStorage.setItem(REFRESH_TOKEN_KEY, tokenSet.refresh_token);
   localStorage.setItem(EXPIRES_AT_KEY, String(Date.now() + tokenSet.expires_in * 1000));
   sessionStorage.removeItem(PKCE_VERIFIER_KEY);
@@ -236,6 +244,7 @@ async function revokeRefreshToken(refreshToken: string) {
 }
 
 export async function logoutFromKeycloak() {
+  const idToken = getIdToken();
   const refreshToken = getRefreshToken();
 
   if (refreshToken) {
@@ -252,11 +261,14 @@ export async function logoutFromKeycloak() {
     client_id: clientId,
     post_logout_redirect_uri: typeof window === "undefined" ? "http://localhost:3000/login" : `${window.location.origin}/login`,
   });
+  if (idToken) params.set("id_token_hint", idToken);
+
   window.location.assign(`${logoutEndpoint()}?${params.toString()}`);
 }
 
 export function clearSession() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(ID_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem(EXPIRES_AT_KEY);
   localStorage.removeItem(USER_KEY);

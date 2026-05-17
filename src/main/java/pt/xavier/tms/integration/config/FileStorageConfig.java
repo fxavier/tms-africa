@@ -10,6 +10,7 @@ public record FileStorageConfig(
         String s3Bucket,
         String s3Region,
         String s3Endpoint,
+        String s3Prefix,
         String s3AccessKey,
         String s3SecretKey
 ) {

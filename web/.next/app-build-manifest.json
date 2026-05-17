@@ -6,10 +6,10 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/page": [
+    "/viaturas/nova/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/viaturas/nova/page.js"
     ],
     "/login/page": [
       "static/chunks/webpack.js",
@@ -26,15 +26,110 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
+    "/configuracoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/configuracoes/page.js"
+    ],
     "/viaturas/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/viaturas/page.js"
     ],
-    "/viaturas/nova/page": [
+    "/viaturas/editar/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/viaturas/nova/page.js"
+      "static/chunks/app/viaturas/editar/page.js"
+    ],
+    "/viaturas/detalhe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/viaturas/detalhe/page.js"
+    ],
+    "/motoristas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/motoristas/page.js"
+    ],
+    "/motoristas/novo/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/motoristas/novo/page.js"
+    ],
+    "/motoristas/detalhe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/motoristas/detalhe/page.js"
+    ],
+    "/atividades/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/atividades/page.js"
+    ],
+    "/atividades/detalhe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/atividades/detalhe/page.js"
+    ],
+    "/atividades/editar/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/atividades/editar/page.js"
+    ],
+    "/atividades/nova/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/atividades/nova/page.js"
+    ],
+    "/manutencoes/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manutencoes/page.js"
+    ],
+    "/manutencoes/detalhe/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manutencoes/detalhe/page.js"
+    ],
+    "/manutencoes/nova/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/manutencoes/nova/page.js"
+    ],
+    "/alertas/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/alertas/page.js"
+    ],
+    "/auditoria/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auditoria/page.js"
+    ],
+    "/checklists/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/checklists/page.js"
+    ],
+    "/checklists/nova/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/checklists/nova/page.js"
+    ],
+    "/recursos-humanos/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/recursos-humanos/page.js"
+    ],
+    "/recursos-humanos/novo/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/recursos-humanos/novo/page.js"
+    ],
+    "/utilizadores/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/utilizadores/page.js"
     ]
   }
 }

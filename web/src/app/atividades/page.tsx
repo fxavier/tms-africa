@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarClock, Filter, MapPin, MoreVertical, Plus, Route, Truck, UserCheck } from "lucide-react";
+import { CalendarClock, Eye, Filter, MapPin, Pencil, Plus, Route, Truck, UserCheck } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ErrorState, LoadingState } from "@/components/tms/ApiFeedback";
 import { PageHeader } from "@/components/tms/PageHeader";
@@ -65,7 +65,7 @@ export default function ActivitiesPage() {
               <TableHead>Início previsto</TableHead>
               <TableHead>Viatura</TableHead>
               <TableHead>Motorista</TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -76,14 +76,23 @@ export default function ActivitiesPage() {
               <TableRow key={row.code}>
                 <TableCell className="font-black">{row.code}</TableCell>
                 <TableCell>{row.title}</TableCell>
-                <TableCell className="text-slate-500">{row.activityType}</TableCell>
+                <TableCell className="text-slate-500">{humanizeEnum(row.activityType)}</TableCell>
                 <TableCell><StatusBadge variant={statusVariant(row.status)}>{humanizeEnum(row.status)}</StatusBadge></TableCell>
                 <TableCell><StatusBadge variant={statusVariant(row.priority)}>{humanizeEnum(row.priority)}</StatusBadge></TableCell>
                 <TableCell><span className="flex items-center gap-2"><MapPin className="h-4 w-4 text-blue-600" /> {row.location}</span></TableCell>
                 <TableCell>{new Date(row.plannedStart).toLocaleString("pt-PT")}</TableCell>
                 <TableCell>{vehicle?.plate ?? "-"}</TableCell>
                 <TableCell>{driver?.fullName ?? "-"}</TableCell>
-                <TableCell><MoreVertical className="h-5 w-5 text-slate-500" /></TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-2">
+                    <Button asChild variant="ghost" size="icon" aria-label={`Ver detalhes da atividade ${row.code}`}>
+                      <Link href={`/atividades/detalhe?id=${row.id}`}><Eye className="h-4 w-4" /></Link>
+                    </Button>
+                    <Button asChild variant="ghost" size="icon" aria-label={`Editar atividade ${row.code}`}>
+                      <Link href={`/atividades/editar?id=${row.id}`}><Pencil className="h-4 w-4" /></Link>
+                    </Button>
+                  </div>
+                </TableCell>
               </TableRow>
               );
             })}

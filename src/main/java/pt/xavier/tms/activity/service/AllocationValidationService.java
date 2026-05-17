@@ -19,7 +19,6 @@ import pt.xavier.tms.integration.port.DriverAvailabilityPort;
 import pt.xavier.tms.security.SecurityUtils;
 import pt.xavier.tms.shared.enums.AuditOperation;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.DriverDocumentType;
 import pt.xavier.tms.shared.enums.DriverStatus;
 import pt.xavier.tms.shared.enums.VehicleStatus;
 import pt.xavier.tms.shared.exception.ResourceNotFoundException;
@@ -30,6 +29,8 @@ import pt.xavier.tms.vehicle.repository.VehicleRepository;
 @Service
 @RequiredArgsConstructor
 public class AllocationValidationService {
+
+    private static final String DRIVER_LICENSE_DOCUMENT_TYPE = "CARTA_CONDUCAO";
 
     private final ActivityRepository activityRepository;
     private final VehicleRepository vehicleRepository;
@@ -78,7 +79,7 @@ public class AllocationValidationService {
             blockers.add("DRIVER_SUSPENDED");
         }
 
-        driverDocumentRepository.findByDriverIdAndDocumentType(driverId, DriverDocumentType.CARTA_CONDUCAO)
+        driverDocumentRepository.findByDriverIdAndDocumentType(driverId, DRIVER_LICENSE_DOCUMENT_TYPE)
                 .stream()
                 .filter(document -> document.getStatus() == DocumentStatus.EXPIRADO)
                 .forEach(document -> blockers.add("DRIVER_LICENSE_EXPIRED:%s".formatted(document.getId())));

@@ -23,7 +23,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import pt.xavier.tms.shared.enums.DocumentStatus;
-import pt.xavier.tms.shared.enums.VehicleDocumentType;
 
 @Getter
 @Entity
@@ -41,9 +40,8 @@ public class VehicleDocument {
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "document_type", nullable = false, length = 40)
-    private VehicleDocumentType documentType;
+    @Column(name = "document_type", nullable = false, length = 80)
+    private String documentType;
 
     @Column(name = "document_number", length = 100)
     private String documentNumber;
@@ -107,7 +105,7 @@ public class VehicleDocument {
         this.vehicle = vehicle;
     }
 
-    public void setDocumentType(VehicleDocumentType documentType) {
+    public void setDocumentType(String documentType) {
         this.documentType = documentType;
     }
 
